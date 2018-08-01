@@ -1,0 +1,13 @@
+# [Examples](https://fast-average-color.github.io/examples/examples/background.html) for [Fast Average Color](https://github.com/fast-average-color/fast-average-color)
+
+- [Background](https://fast-average-color.github.io/examples/examples/background.html)
+- [Box shadow](https://fast-average-color.github.io/examples/examples/box-shadow.html)
+- [Box shadow, 4 sides](https://fast-average-color.github.io/examples/examples/box-shadow-4-sides.html)
+- [Border](https://fast-average-color.github.io/examples/examples/border.html)
+- [Gallery](https://fast-average-color.github.io/examples/examples/gallery.html)
+- [Gradient](https://fast-average-color.github.io/examples/examples/gradient.html)
+- [Gradient as stripes](https://fast-average-color.github.io/examples/examples/gradient_stripes.html)
+- [Canvas](https://fast-average-color.github.io/examples/examples/canvas.html)
+- [Text photo](https://fast-average-color.github.io/examples/examples/text-photo.html)
+- [Ambilight](https://fast-average-color.github.io/examples/examples/ambilight.html)
+- [Define the average color for your images](https://fast-average-color.github.io/examples/examples/define.html)
