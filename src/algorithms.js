@@ -1,5 +1,5 @@
 (function() {
-    var ac = new FastAverageColor();
+    var fac = new FastAverageColor();
     var rows = document.querySelectorAll('.row');
     var listAlgorithms = ['simple', 'sqrt', 'dominant'];
 
@@ -10,19 +10,18 @@
           if (!resource) {
               continue;
           }
-          var color = ac.getColorAsync(rows[i].querySelector('.item_image'), function(color, data) {
-              var alogrithmItem = data.row.querySelector('.item_' + data.algorithm);
+          
+          fac.getColorAsync(rows[i].querySelector('.item_image'), { algorithm: algorithmName })
+            .then(function(data, color) {
+                var alogrithmItem = data.row.querySelector('.item_' + data.algorithm);
 
-              alogrithmItem.style.backgroundColor = color.rgb;
-              alogrithmItem.style.color = color.isDark ? '#fff' : '#000';
-              alogrithmItem.innerText = color.hex;
-          }, {
-              data: {
-                  row: rows[i],
-                  algorithm: algorithmName
-              },
-              algorithm: algorithmName
-          });
+                alogrithmItem.style.backgroundColor = color.rgb;
+                alogrithmItem.style.color = color.isDark ? '#fff' : '#000';
+                alogrithmItem.innerText = color.hex;
+            }.bind(this, { row: rows[i], algorithm: algorithmName }))
+            .catch(function(e) {
+                console.log(e);
+            });
         }
     }
 })();

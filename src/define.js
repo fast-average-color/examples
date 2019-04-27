@@ -16,7 +16,7 @@ var App = {
                 var img = new Image();
                 img.src = reader.result;
 
-                that._fac.getColorAsync(img, function(color) {
+                that._fac.getColorAsync(img).then(function(color) {
                     that.addImage(img, file.name, color);
                 });
             };
@@ -93,7 +93,7 @@ var App = {
                     var image = new Image();
                     image.src = canvas.toDataURL('image/png');
 
-                    that._fac.getColorAsync(image, function(color) {
+                    that._fac.getColorAsync(image).then(function(color) {
                         that.addImage(image, 'photo', color);
                         mediaStream.stop();
                     });
