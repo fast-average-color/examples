@@ -1,6 +1,7 @@
 # [Examples](https://fast-average-color.github.io/examples/background.html) for [Fast Average Color](https://github.com/fast-average-color/fast-average-color)
 
 - [Background](https://fast-average-color.github.io/examples/background.html)
+- [Background async](https://fast-average-color.github.io/examples/background_async.html)
 - [Box shadow](https://fast-average-color.github.io/examples/box-shadow.html)
 - [Box shadow, 4 sides](https://fast-average-color.github.io/examples/box-shadow-4-sides.html)
 - [Border](https://fast-average-color.github.io/examples/border.html)
