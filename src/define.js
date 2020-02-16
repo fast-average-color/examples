@@ -1,4 +1,5 @@
 var App = {
+    imageCounter: 0,
     init: function() {
         var
             that = this,
@@ -16,8 +17,8 @@ var App = {
                 var img = new Image();
                 img.src = reader.result;
 
-                that._fac.getColorAsync(img).then(function(color) {
-                    that.addImage(img, file.name, color);
+                that.getColors(img).then(function(colors) {
+                    that.addImage(img, file.name, colors);
                 });
             };
 
@@ -30,29 +31,56 @@ var App = {
             that.capture();
         };
     },
-    addImage: function(resource, name, color) {
+    setImageColor: function(nodeCheckbox, backgroundColor, isDark) {
+        console.log(arguments);
+        var container = nodeCheckbox.parentNode.parentNode.parentNode;
+        container.style.backgroundColor = backgroundColor;
+        container.style.color = isDark ? 'white' : 'black';
+    },
+    getColors: function(image) {
+        return Promise.all([
+            this._fac.getColorAsync(image, { algorithm: 'simple' }),
+            this._fac.getColorAsync(image, { algorithm: 'sqrt' }),
+            this._fac.getColorAsync(image, { algorithm: 'dominant' })
+        ]);
+    },
+    addImage: function(resource, name, colors) {
         var images = document.querySelector('.images');
         var item = document.createElement('div');
         item.className = 'images__item';
-        item.style.background = color.rgb;
+        item.style.background = colors[0].rgb;
         images.insertBefore(item, images.firstChild);
 
         var title = document.createElement('div');
         title.className = 'images__title';
         title.innerHTML = [
             'Filename: ' + name,
-            [
-                'rgb: ' + color.rgb,
-                'rgba: ' + color.rgba,
-                'hex: ' + color.hex,
-                'hexa: ' + color.hexa
-            ].join(', ')
-        ].join('<br/>');
-        title.style.color = color.isDark ? 'white' : 'black';
+            '<br /><br/>Algorithms:<br/>',
+            this.getColorInfo(colors[0], 'Simple', true),
+            this.getColorInfo(colors[1], 'Sqrt'),
+            this.getColorInfo(colors[2], 'Dominant'),
+        ].join('');
         item.appendChild(title);
 
         resource.className = 'images__img';
         item.appendChild(resource);
+        this.imageCounter++;
+    },
+    getTextColor: function(color) {
+        return color.isDark ? 'white' : 'black';
+    },
+    getColorInfo: function(color, algorithm, checked) {
+        var text = [
+                color.rgb,
+                color.rgba,
+                color.hex,
+                color.hexa
+            ].join(', ');
+        
+        return '<label style="padding:5px; display:block; background:' + color.rgb + '; color:' + this.getTextColor(color) + '"><input type="radio" ' + (checked ? 'checked' : '' ) + ' name="radio' + this.imageCounter + '" onclick="App.setImageColor(this, \'' + color.rgb + '\', ' + color.isDark + ')" /> ' +
+                algorithm + ': ' +
+                text +
+            '</label>';
     },
     capture: function() {
         var that = this;
@@ -93,8 +121,9 @@ var App = {
                     var image = new Image();
                     image.src = canvas.toDataURL('image/png');
 
-                    that._fac.getColorAsync(image).then(function(color) {
-                        that.addImage(image, 'photo', color);
+
+                    that.getColors(image).then(function(colors) {
+                        that.addImage(image, 'photo', colors);
                         mediaStream.stop();
                     });
                 }, 500);
