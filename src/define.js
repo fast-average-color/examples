@@ -49,6 +49,7 @@ var App = {
         var item = document.createElement('div');
         item.className = 'images__item';
         item.style.background = colors[0].rgb;
+        item.style.color = this.getTextColor(colors[0]);
         images.insertBefore(item, images.firstChild);
 
         var title = document.createElement('div');
