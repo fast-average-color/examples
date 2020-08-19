@@ -6,7 +6,7 @@ var App = {
             input = document.querySelector('.select-file'),
             captureButton = document.querySelector('.capture-photo');
 
-        this._fac = new FastAverageColor({mode: 'precision'});
+        this._fac = new FastAverageColor();
 
         input.onchange = function() {
             var
@@ -39,9 +39,9 @@ var App = {
     },
     getColors: function(image) {
         return Promise.all([
-            this._fac.getColorAsync(image, { algorithm: 'simple' }),
-            this._fac.getColorAsync(image, { algorithm: 'sqrt' }),
-            this._fac.getColorAsync(image, { algorithm: 'dominant' })
+            this._fac.getColorAsync(image, { algorithm: 'simple', mode: 'precision' }),
+            this._fac.getColorAsync(image, { algorithm: 'sqrt', mode: 'precision' }),
+            this._fac.getColorAsync(image, { algorithm: 'dominant', mode: 'precision' })
         ]);
     },
     addImage: function(resource, name, colors) {
@@ -77,7 +77,7 @@ var App = {
                 color.hex,
                 color.hexa
             ].join(', ');
-        
+
         return '<label style="padding:5px; display:block; background:' + color.rgb + '; color:' + this.getTextColor(color) + '"><input type="radio" ' + (checked ? 'checked' : '' ) + ' name="radio' + this.imageCounter + '" onclick="App.setImageColor(this, \'' + color.rgb + '\', ' + color.isDark + ')" /> ' +
                 algorithm + ': ' +
                 text +
