@@ -20,4 +20,4 @@ async function printAverageColor(filename) {
     console.log('Dominant average color: ', fac.getColorFromArray4(imageData.data, { algorithm: 'dominant'}));
 }
 
-printAverageColor(`../images/1.jpg`);
+printAverageColor('../images/1.jpg');
