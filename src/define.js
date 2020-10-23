@@ -38,10 +38,23 @@ var App = {
         container.style.color = isDark ? 'white' : 'black';
     },
     getColors: function(image) {
+        var ignoredColor = [
+            [255, 255, 255, 255],
+            [255, 90, 0, 255],
+        ];
         return Promise.all([
-            this._fac.getColorAsync(image, { algorithm: 'simple' }),
-            this._fac.getColorAsync(image, { algorithm: 'sqrt' }),
-            this._fac.getColorAsync(image, { algorithm: 'dominant' })
+            this._fac.getColorAsync(image, {
+                ignoredColor: ignoredColor,
+                algorithm: 'simple'
+            }),
+            this._fac.getColorAsync(image, {
+                ignoredColor: ignoredColor,
+                algorithm: 'sqrt'
+            }),
+            this._fac.getColorAsync(image, {
+                ignoredColor: ignoredColor,
+                algorithm: 'dominant'
+            })
         ]);
     },
     addImage: function(resource, name, colors) {
@@ -54,17 +67,26 @@ var App = {
 
         var title = document.createElement('div');
         title.className = 'images__title';
-        title.innerHTML = [
-            'Filename: ' + name,
-            '<br /><br/>Algorithms:<br/>',
+        title.innerText = name;
+        item.appendChild(title);
+
+        var body = document.createElement('div');
+        body.className = 'images__body';
+        body.innerHTML = [
+            'Algorithms:<br/>',
             this.getColorInfo(colors[0], 'Simple', true),
             this.getColorInfo(colors[1], 'Sqrt'),
             this.getColorInfo(colors[2], 'Dominant'),
         ].join('');
-        item.appendChild(title);
+        item.appendChild(body);
 
         resource.className = 'images__img';
-        item.appendChild(resource);
+
+        var container = document.createElement('div');
+        container.className = 'images__img-container';
+        container.appendChild(resource);
+        item.appendChild(container);
+
         this.imageCounter++;
     },
     getTextColor: function(color) {
@@ -77,7 +99,7 @@ var App = {
                 color.hex,
                 color.hexa
             ].join(', ');
-        
+
         return '<label style="padding:5px; display:block; background:' + color.rgb + '; color:' + this.getTextColor(color) + '"><input type="radio" ' + (checked ? 'checked' : '' ) + ' name="radio' + this.imageCounter + '" onclick="App.setImageColor(this, \'' + color.rgb + '\', ' + color.isDark + ')" /> ' +
                 algorithm + ': ' +
                 text +
