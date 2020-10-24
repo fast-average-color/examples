@@ -27,6 +27,7 @@ const configs = [
   'canvas',
   'border',
   'text-photo',
+  'gradient',
 ].map((name) => createConfig(name));
 
 export default configs;

@@ -515,17 +515,19 @@
     }, false);
 
     var fac = new FastAverageColor();
-    Array.from(document.querySelectorAll('.row')).forEach(function (row) {
-        ['simple', 'sqrt', 'dominant'].forEach(function (algorithm) {
-            fac.getColorAsync(row.querySelector('.item_image'), { algorithm: algorithm })
-                .then(function (color) {
-                var item = row.querySelector('.item_' + algorithm);
-                item.style.backgroundColor = color.rgb;
-                item.style.color = color.isDark ? '#fff' : '#000';
-                item.innerText = color.hex;
-            })
-                .catch(function (e) { return console.log(e); });
+    window.addEventListener('load', function () {
+        Array.from(document.querySelectorAll('.row')).forEach(function (row) {
+            ['simple', 'sqrt', 'dominant'].forEach(function (algorithm) {
+                fac.getColorAsync(row.querySelector('.item_image'), { algorithm: algorithm })
+                    .then(function (color) {
+                    var item = row.querySelector('.item_' + algorithm);
+                    item.style.backgroundColor = color.rgb;
+                    item.style.color = color.isDark ? '#fff' : '#000';
+                    item.innerText = color.hex;
+                })
+                    .catch(function (e) { return console.log(e); });
+            });
         });
-    });
+    }, false);
 
 })));

@@ -3,6 +3,29 @@
     factory();
 }((function () { 'use strict';
 
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    function __spreadArrays() {
+        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+        for (var r = Array(s), k = 0, i = 0; i < il; i++)
+            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+                r[k] = a[j];
+        return r;
+    }
+
     /*! Fast Average Color | © 2020 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
     function isIgnoredColor(arr, num, ignoredColor) {
         for (let i = 0; i < ignoredColor.length; i++) {
@@ -477,13 +500,6 @@
         }
     }
 
-    var rnd = function (max) {
-        return Math.random() * max;
-    };
-    var rndFloor = function (max) {
-        return Math.floor(Math.random() * max);
-    };
-
     window.addEventListener('load', function() {
         var pages = [
             'background',
@@ -522,77 +538,26 @@
     }, false);
 
     var fac = new FastAverageColor();
-    var App = /** @class */ (function () {
-        function App() {
-            this.canvas = document.querySelector('canvas');
-            this.ctx = this.canvas.getContext('2d');
-            this.info = document.querySelector('.info');
-            this.infoColor = document.querySelector('.info__color');
-            this.stoped = false;
-            this.isPrecision = true;
-            this.bindEvents();
-            this.start();
-        }
-        App.prototype.bindEvents = function () {
-            var _this = this;
-            var startElement = document.querySelector('#start');
-            startElement.onclick = function () {
-                _this.stoped = !_this.stoped;
-                if (_this.stoped) {
-                    startElement.innerText = 'Start';
-                    _this.stop();
-                }
-                else {
-                    startElement.innerText = 'Stop';
-                    _this.start();
-                }
-            };
-            var precisionElement = document.querySelector('#precision');
-            precisionElement.onclick = function () {
-                _this.isPrecision = true;
-                _this.getColor();
-            };
-            var speedElement = document.querySelector('#speed');
-            speedElement.onclick = function () {
-                _this.isPrecision = false;
-                _this.getColor();
-            };
-        };
-        App.prototype.start = function () {
-            this.timer = window.setInterval(this.nextStep.bind(this), 50);
-        };
-        App.prototype.stop = function () {
-            clearInterval(this.timer);
-        };
-        App.prototype.nextStep = function () {
-            var _a = this.canvas, width = _a.width, height = _a.height;
-            this.ctx.fillStyle = 'rgba(' + [
-                rndFloor(255),
-                rndFloor(255),
-                rndFloor(255),
-                rnd(1)
-            ].join(',') + ')';
-            this.ctx.fillRect(rnd(width), rnd(height), rnd(width), rnd(height));
-            this.getColor();
-        };
-        App.prototype.getColor = function () {
-            var timeA = Date.now();
-            var color = fac.getColor(this.canvas, {
-                mode: this.isPrecision ? 'precision' : 'speed'
-            });
-            this.info.style.backgroundColor = color.rgba;
-            this.infoColor.innerHTML = [
-                'rgb: ' + color.rgb,
-                'rgba: ' + color.rgba,
-                'hex: ' + color.hex,
-                'hexa: ' + color.hexa,
-                'time: ' + (Date.now() - timeA) + ' ms'
-            ].map(function (item) { return "<div class=\"info__item\">" + item + "</div>"; }).join('');
-        };
-        return App;
-    }());
     window.addEventListener('load', function () {
-        new App();
+        Array.from(document.querySelectorAll('.item')).forEach(function (item) {
+            var image = item.querySelector('img');
+            var isBottom = item.classList.contains('item_bottom');
+            var gradient = item.querySelector('.item__gradient');
+            var height = image.naturalHeight;
+            var size = 50;
+            var color = fac.getColor(image, isBottom ?
+                { top: height - size, height: size } :
+                { height: size });
+            var colorEnd = __spreadArrays(color.value.slice(0, 3), [0]).join(',');
+            item.style.background = color.rgb;
+            item.style.color = color.isDark ? 'white' : 'black';
+            if (isBottom) {
+                gradient.style.background = "linear-gradient(to bottom, rgba(" + colorEnd + ") 0%, " + color.rgba + " 100%)";
+            }
+            else {
+                gradient.style.background = "linear-gradient(to top, rgba(" + colorEnd + ") 0%, " + color.rgba + " 100%)";
+            }
+        });
     }, false);
 
 })));
