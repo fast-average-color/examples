@@ -6,7 +6,7 @@ var App = {
             input = document.querySelector('.select-file'),
             captureButton = document.querySelector('.capture-photo');
 
-        this._fac = new FastAverageColor({mode: 'precision'});
+        this._fac = new FastAverageColor();
 
         input.onchange = function() {
             var
@@ -38,23 +38,10 @@ var App = {
         container.style.color = isDark ? 'white' : 'black';
     },
     getColors: function(image) {
-        var ignoredColor = [
-            [255, 255, 255, 255],
-            [255, 90, 0, 255],
-        ];
         return Promise.all([
-            this._fac.getColorAsync(image, {
-                ignoredColor: ignoredColor,
-                algorithm: 'simple'
-            }),
-            this._fac.getColorAsync(image, {
-                ignoredColor: ignoredColor,
-                algorithm: 'sqrt'
-            }),
-            this._fac.getColorAsync(image, {
-                ignoredColor: ignoredColor,
-                algorithm: 'dominant'
-            })
+            this._fac.getColorAsync(image, { algorithm: 'simple', mode: 'precision' }),
+            this._fac.getColorAsync(image, { algorithm: 'sqrt', mode: 'precision' }),
+            this._fac.getColorAsync(image, { algorithm: 'dominant', mode: 'precision' })
         ]);
     },
     addImage: function(resource, name, colors) {
