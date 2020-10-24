@@ -1,0 +1,31 @@
+{
+  "name": "fast-average-color-examples",
+  "version": "1.0.0",
+  "description": "Examples for Fast Average Color",
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fast-average-color/examples.git"
+  },
+  "keywords": [
+    "examples",
+    "average color"
+  ],
+  "author": "Denis Seleznev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/fast-average-color/examples/issues"
+  },
+  "homepage": "https://github.com/fast-average-color/examples#readme",
+  "private": true,
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "fast-average-color": "^6.2.0",
+    "rollup": "^2.32.1",
+    "rollup-plugin-css-only": "^2.1.0",
+    "rollup-plugin-typescript2": "^0.28.0",
+    "typescript": "^4.0.3"
+  }
+}

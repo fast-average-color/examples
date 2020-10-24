@@ -1,12 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Average color: Canvas</title>
+    <title>Get Average Color for canvas</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <link rel="stylesheet" href="src/common.css" />
-    <link rel="stylesheet" href="src/canvas.css" />
-    <script src="src/common.js"></script>
+    <link rel="stylesheet" href="dist/canvas.css" />
+    <script src="dist/canvas.js" async></script>
 </head>
 <body>
     <canvas width="640" height="480" ></canvas>
@@ -14,13 +13,11 @@
     <div class="info">Average color:
         <div class="info__color"></div>
         <div class="mode">
-            Mode: 
+            Mode:
             <label><input name="mode" type="radio" id="precision" autocomplete="off" checked /> precision</label>
             <label><input name="mode" type="radio" id="speed" autocomplete="off" /> speed</label>
         </div>
          <button id="start">Stop</button>
     </div>
-    <script src="https://unpkg.com/fast-average-color/dist/index.js"></script>
-    <script src="src/canvas.js"></script>
 </body>
 </html>

@@ -1,25 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Average color: Text photo</title>
+    <title>Get average color for text photo</title>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-    <link rel="stylesheet" href="src/common.css" />
-    <link rel="stylesheet" href="src/text-photo.css" />
-    <script src="src/common.js"></script>
+    <link rel="stylesheet" href="dist/text-photo.css" />
+    <script src="dist/text-photo.js" async></script>
 </head>
 <body>
     <form class="controls" autocomplete="off">
-        <label><input type="radio" name="bro" value="firefox" checked onclick="App.setImage(this.value)" /> Firefox</label>
-        <label><input type="radio" name="bro" value="chrome" onclick="App.setImage(this.value)" /> Chrome</label>
-        <label><input type="radio" name="bro" value="ie" onclick="App.setImage(this.value)" /> Internet Explorer</label>
-        <label><input type="radio" name="bro" value="opera" onclick="App.setImage(this.value)" /> Opera</label>
+        <label><input type="radio" name="bro" value="firefox" checked /> Firefox</label>
+        <label><input type="radio" name="bro" value="chrome" /> Chrome</label>
+        <label><input type="radio" name="bro" value="ie" /> Internet Explorer</label>
+        <label><input type="radio" name="bro" value="opera" /> Opera</label>
     </form>
 
-    <img class="big-photo" />    
+    <img class="big-photo" />
     <canvas class="text-photo"></canvas>
-
-    <script src="https://unpkg.com/fast-average-color/dist/index.js"></script>
-    <script src="src/text-photo.js"></script>
 </body>
 </html>

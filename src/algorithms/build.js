@@ -1,7 +1,7 @@
 'use strict';
 
 const fs = require('fs');
-const template = fs.readFileSync('./algorithms.template.html', 'utf8');
+const template = fs.readFileSync('./template.html', 'utf8');
 const MAX_PHOTO = 27;
 
 let rows = '';
@@ -14,4 +14,4 @@ for (let i = 1; i <= MAX_PHOTO; i++) {
   </div>`
 }
 
-fs.writeFileSync('../algorithms.html', template.replace(/\{ROWS\}/, rows));
+fs.writeFileSync('../../algorithms.html', template.replace(/\{ROWS\}/, rows));
