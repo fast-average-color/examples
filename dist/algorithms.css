@@ -1,3 +1,20 @@
+.rows {
+  margin: 50px 0 0 20px;
+  color: #fff;
+}
+
+.row
+{
+  display: flex;
+}
+
+.item
+{
+  transition: all .3s ease;
+  flex-basis: 300px;
+  margin: 20px 20px 0 0;
+  text-align: center;
+}
 html,
 body
 {
@@ -53,21 +70,4 @@ body
 .button:hover
 {
     opacity: .5;
-}
-.rows {
-  margin: 50px 0 0 20px;
-  color: #fff;
-}
-
-.row
-{
-  display: flex;
-}
-
-.item
-{
-  transition: all .3s ease;
-  flex-basis: 300px;
-  margin: 20px 20px 0 0;
-  text-align: center;
 }
