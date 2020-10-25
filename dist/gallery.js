@@ -662,14 +662,36 @@
 
     var fac = new FastAverageColor();
     window.addEventListener('load', function () {
-        Array.from(document.querySelectorAll('.item')).forEach(function (item) {
-            var image = item.querySelector('img');
-            var color = fac.getColor(image);
-            if (image) {
-                image.style.boxShadow = '0 70px 90px ' + color.rgb;
-                item.style.color = color.isDark ? 'white' : 'black';
+        var items = Array.from(document.querySelectorAll('.slider__item'));
+        var border = document.querySelector('.big-image-border');
+        var bigImage = document.querySelector('.big-image');
+        bigImage.classList.remove('big-image_hidden');
+        function onClick(elem) {
+            for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
+                var item = items_2[_i];
+                item.classList.remove('slider__item_active');
             }
-        });
-    }, false);
+            elem.classList.add('slider__item_active');
+            bigImage.src = elem.src;
+            var width = bigImage.naturalWidth;
+            var height = bigImage.naturalHeight;
+            var size = 30;
+            var top = fac.getColor(elem, { left: 0, top: 0, width: width, height: size });
+            var bottom = fac.getColor(elem, { left: 0, top: height - size, width: width, height: size });
+            var left = fac.getColor(elem, { left: 0, top: 0, width: size, height: height });
+            var right = fac.getColor(elem, { left: width - size, top: 0, width: size, height: height });
+            border.style.borderTopColor = top.rgb;
+            border.style.borderRightColor = right.rgb;
+            border.style.borderBottomColor = bottom.rgb;
+            border.style.borderLeftColor = left.rgb;
+        }
+        onClick(items[0]);
+        for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
+            var item = items_1[_i];
+            item.onclick = function () {
+                onClick(this);
+            };
+        }
+    });
 
 })));

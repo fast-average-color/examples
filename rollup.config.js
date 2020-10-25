@@ -30,6 +30,8 @@ const configs = [
     'text-photo',
     'gradient',
     'gradient_stripes',
+    'gallery',
+    'define',
 ].map(name => createConfig(name));
 
 export default configs;

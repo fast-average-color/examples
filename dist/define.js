@@ -661,15 +661,146 @@
     }, false);
 
     var fac = new FastAverageColor();
+    var App = /** @class */ (function () {
+        function App() {
+            var _this = this;
+            this.imageCounter = 0;
+            var input = document.querySelector('.select-file');
+            var captureButton = document.querySelector('.capture-photo');
+            input.onchange = function (e) {
+                var _a;
+                var file = (_a = e.target.files) === null || _a === void 0 ? void 0 : _a[0];
+                var reader = new FileReader();
+                reader.onloadend = function () {
+                    var image = new Image();
+                    image.src = reader.result;
+                    _this.getColors(image).then(function (colors) {
+                        _this.addImage(image, (file === null || file === void 0 ? void 0 : file.name) || '...', colors);
+                    });
+                };
+                if (file) {
+                    reader.readAsDataURL(file);
+                }
+            };
+            captureButton.onclick = function () {
+                _this.capture();
+            };
+        }
+        App.prototype.setImageColor = function (elem, backgroundColor, isDark) {
+            var container = elem.parentNode.parentNode;
+            container.style.backgroundColor = backgroundColor;
+            container.style.color = this.getTextColor(isDark);
+        };
+        App.prototype.getColors = function (image) {
+            return Promise.all([
+                fac.getColorAsync(image, { algorithm: 'simple', mode: 'precision' }),
+                fac.getColorAsync(image, { algorithm: 'sqrt', mode: 'precision' }),
+                fac.getColorAsync(image, { algorithm: 'dominant', mode: 'precision' })
+            ]);
+        };
+        App.prototype.addImage = function (resource, name, colors) {
+            var images = document.querySelector('.images');
+            var item = document.createElement('div');
+            item.className = 'images__item';
+            var firstColor = colors[0];
+            item.style.background = firstColor.rgb;
+            item.style.color = this.getTextColor(firstColor.isDark);
+            images.insertBefore(item, images.firstChild);
+            var title = document.createElement('div');
+            title.className = 'images__title';
+            title.innerText = name;
+            item.appendChild(title);
+            var body = document.createElement('div');
+            body.className = 'images__body';
+            body.innerHTML = 'Algorithms:<br/>';
+            body.appendChild(this.getColorInfo(colors[0], 'simple', true));
+            body.appendChild(this.getColorInfo(colors[1], 'sqrt', false));
+            body.appendChild(this.getColorInfo(colors[2], 'dominant', false));
+            item.appendChild(body);
+            resource.className = 'images__img';
+            var container = document.createElement('div');
+            container.className = 'images__img-container';
+            container.appendChild(resource);
+            item.appendChild(container);
+            this.imageCounter++;
+        };
+        App.prototype.getTextColor = function (isDark) {
+            return isDark ? 'white' : 'black';
+        };
+        App.prototype.getColorInfo = function (color, algorithm, checked) {
+            var _this = this;
+            var text = [
+                color.rgb,
+                color.rgba,
+                color.hex,
+                color.hexa
+            ].join(', ');
+            var label = document.createElement('label');
+            label.className = 'images__algorithm';
+            label.style.background = color.rgb;
+            label.style.color = this.getTextColor(color.isDark);
+            var input = document.createElement('input');
+            input.name = 'radio' + this.imageCounter;
+            input.type = 'radio';
+            input.checked = checked;
+            input.onclick = function () {
+                _this.setImageColor(label, color.rgb, color.isDark);
+            };
+            label.appendChild(input);
+            label.appendChild(document.createTextNode(algorithm + ': ' + text));
+            return label;
+        };
+        App.prototype.capture = function () {
+            var _this = this;
+            navigator.getUserMedia({ video: true, audio: false }, function (mediaStream) {
+                // Firefox
+                if (!('readyState' in mediaStream)) {
+                    // @ts-ignore
+                    mediaStream.readyState = 'live';
+                }
+                var video = document.createElement('video');
+                var previewStream = new MediaStream(mediaStream);
+                if (window.HTMLMediaElement) {
+                    video.srcObject = previewStream; // Safari 11 doesn't allow use of createObjectURL for MediaStream
+                }
+                else {
+                    video.src = URL.createObjectURL(previewStream);
+                }
+                video.muted = true;
+                // Required by Safari on iOS 11. See https://webkit.org/blog/6784
+                video.setAttribute('playsinline', '');
+                video.play();
+                video.addEventListener('playing', function () {
+                    setTimeout(function () {
+                        var canvas = document.createElement('canvas');
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        var ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            ctx.drawImage(video, 0, 0);
+                        }
+                        var image = new Image();
+                        image.src = canvas.toDataURL('image/png');
+                        _this.getColors(image).then(function (colors) {
+                            _this.addImage(image, 'Camera', colors);
+                            // @ts-ignore
+                            mediaStream.stop();
+                        });
+                    }, 500);
+                });
+            }, function () {
+                // console.log('failure to get media');
+            });
+        };
+        return App;
+    }());
+    navigator.getUserMedia = navigator.getUserMedia ||
+        // @ts-ignore
+        navigator.webkitGetUserMedia ||
+        // @ts-ignore
+        navigator.mozGetUserMedia;
     window.addEventListener('load', function () {
-        Array.from(document.querySelectorAll('.item')).forEach(function (item) {
-            var image = item.querySelector('img');
-            var color = fac.getColor(image);
-            if (image) {
-                image.style.boxShadow = '0 70px 90px ' + color.rgb;
-                item.style.color = color.isDark ? 'white' : 'black';
-            }
-        });
+        new App();
     }, false);
 
 })));

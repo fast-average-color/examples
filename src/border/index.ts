@@ -1,7 +1,6 @@
 import FastAverageColor from 'fast-average-color';
 
-import '../common.js';
-import '../common.css';
+import '../common';
 import './index.css';
 
 const fac = new FastAverageColor();
