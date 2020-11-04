@@ -21,6 +21,7 @@ const createConfig = name => ({
 
 const configs = [
     'algorithms',
+    'ambilight',
     'background',
     'background_async',
     'box-shadow',
