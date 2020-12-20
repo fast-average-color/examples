@@ -14,7 +14,7 @@ const createConfig = name => ({
         typescript(),
         nodeResolve(),
         css({
-            output: `dist/${name}.css`,
+            output: `${name}.css`,
         }),
     ]
 });

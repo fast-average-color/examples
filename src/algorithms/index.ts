@@ -1,5 +1,4 @@
 import FastAverageColor from 'fast-average-color';
-
 import '../common';
 import './index.css';
 
