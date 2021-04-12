@@ -18,15 +18,13 @@
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
 
-    function __spreadArrays() {
-        for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-        for (var r = Array(s), k = 0, i = 0; i < il; i++)
-            for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-                r[k] = a[j];
-        return r;
+    function __spreadArray(to, from) {
+        for (var i = 0, il = from.length, j = to.length; i < il; i++, j++)
+            to[j] = from[i];
+        return to;
     }
 
-    /*! Fast Average Color | © 2020 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
+    /*! Fast Average Color | © 2021 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
     function toHex(num) {
         const str = num.toString(16);
 
@@ -158,7 +156,8 @@
         const divider = 24;
         const ignoredColor = options.ignoredColor;
         const step = options.step;
-
+        let max = [0, 0, 0, 0, 0];
+        
         for (let i = 0; i < len; i += step) {
             const red = arr[i];
             const green = arr[i + 1];
@@ -184,18 +183,11 @@
             } else {
                 colorHash[key] = [red * alpha, green * alpha, blue * alpha, alpha, 1];
             }
+            
+            if (max[4] < colorHash[key][4]) {
+                max = colorHash[key];
+            }
         }
-
-        const buffer = Object.keys(colorHash)
-            .map(key => colorHash[key])
-            .sort((a, b) => {
-                const countA = a[4];
-                const countB = b[4];
-
-                return countA > countB ?  -1 : countA === countB ? 0 : 1;
-            });
-
-        const max = buffer[0];
 
         const redTotal = max[0];
         const greenTotal = max[1];
@@ -805,7 +797,7 @@
             var color = fac.getColor(image, isBottom ?
                 { top: height - size, height: size } :
                 { height: size });
-            var colorEnd = __spreadArrays(color.value.slice(0, 3), [0]).join(',');
+            var colorEnd = __spreadArray(__spreadArray([], color.value.slice(0, 3)), [0]).join(',');
             item.style.background = color.rgb;
             item.style.color = color.isDark ? 'white' : 'black';
             if (isBottom) {

@@ -210,12 +210,14 @@
     };
 
     function __extends(d, b) {
+        if (typeof b !== "function" && b !== null)
+            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
         extendStatics(d, b);
         function __() { this.constructor = d; }
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     }
 
-    /*! Fast Average Color | © 2020 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
+    /*! Fast Average Color | © 2021 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
     function toHex(num) {
         const str = num.toString(16);
 
@@ -347,7 +349,8 @@
         const divider = 24;
         const ignoredColor = options.ignoredColor;
         const step = options.step;
-
+        let max = [0, 0, 0, 0, 0];
+        
         for (let i = 0; i < len; i += step) {
             const red = arr[i];
             const green = arr[i + 1];
@@ -373,18 +376,11 @@
             } else {
                 colorHash[key] = [red * alpha, green * alpha, blue * alpha, alpha, 1];
             }
+            
+            if (max[4] < colorHash[key][4]) {
+                max = colorHash[key];
+            }
         }
-
-        const buffer = Object.keys(colorHash)
-            .map(key => colorHash[key])
-            .sort((a, b) => {
-                const countA = a[4];
-                const countB = b[4];
-
-                return countA > countB ?  -1 : countA === countB ? 0 : 1;
-            });
-
-        const max = buffer[0];
 
         const redTotal = max[0];
         const greenTotal = max[1];
@@ -806,7 +802,7 @@
         return AmbilightBase;
     }());
 
-    var fac = new FastAverageColor();
+    var fac$1 = new FastAverageColor();
     var Ambilight4Sides = /** @class */ (function (_super) {
         __extends(Ambilight4Sides, _super);
         function Ambilight4Sides(video, container, options) {
@@ -831,25 +827,25 @@
             var height = this.video.videoHeight;
             var size = this.options.size;
             var video = this.video;
-            var colorTop = fac.getColor(video, {
+            var colorTop = fac$1.getColor(video, {
                 left: 0,
                 top: 0,
                 height: size,
                 width: width
             });
-            var colorRight = fac.getColor(video, {
+            var colorRight = fac$1.getColor(video, {
                 left: width - size,
                 top: 0,
                 width: size,
                 height: height
             });
-            var colorLeft = fac.getColor(video, {
+            var colorLeft = fac$1.getColor(video, {
                 left: 0,
                 top: 0,
                 width: size,
                 height: height
             });
-            var colorBottom = fac.getColor(video, {
+            var colorBottom = fac$1.getColor(video, {
                 left: 0,
                 top: height - size,
                 width: width,
@@ -871,7 +867,7 @@
     var isFirefox = ua.indexOf('firefox') > -1;
     var isSafari = (ua.search('safari') > -1 && ua.search('chrome') === -1);
 
-    var fac$1 = new FastAverageColor();
+    var fac = new FastAverageColor();
     var AmbilightManyPoints = /** @class */ (function (_super) {
         __extends(AmbilightManyPoints, _super);
         function AmbilightManyPoints(video, container, options) {
@@ -955,13 +951,13 @@
             var _c = this.options, countByHeight = _c.countByHeight, countByWidth = _c.countByWidth;
             for (var i = 0; i < this.leftElems.length; i++) {
                 var size = Math.floor(height / countByHeight);
-                var leftColor = fac$1.getColor(video, {
+                var leftColor = fac.getColor(video, {
                     left: 0,
                     top: size * i,
                     width: size,
                     height: size
                 });
-                var rightColor = fac$1.getColor(video, {
+                var rightColor = fac.getColor(video, {
                     left: width - size,
                     top: size * i,
                     width: size,
@@ -974,13 +970,13 @@
             }
             for (var i = 0; i < this.topElems.length; i++) {
                 var size = Math.floor(width / countByWidth);
-                var topColor = fac$1.getColor(video, {
+                var topColor = fac.getColor(video, {
                     left: size * i,
                     top: 0,
                     width: size,
                     height: size
                 });
-                var bottomColor = fac$1.getColor(video, {
+                var bottomColor = fac.getColor(video, {
                     left: size * i,
                     top: height - size,
                     width: size,
