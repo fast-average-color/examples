@@ -844,7 +844,7 @@
             };
         };
         App.prototype.start = function () {
-            this.timer = window.setInterval(this.nextStep.bind(this), 50);
+            this.timer = window.setInterval(this.nextStep.bind(this), 100);
         };
         App.prototype.stop = function () {
             clearInterval(this.timer);
@@ -861,19 +861,20 @@
             this.getColor();
         };
         App.prototype.getColor = function () {
-            var timeA = Date.now();
+            var timeBefore = Date.now();
             var color = fac.getColor(this.canvas, {
                 algorithm: this.algorithm,
                 mode: this.isPrecision ? 'precision' : 'speed',
                 step: this.step,
             });
+            var time = Date.now() - timeBefore;
             this.infoElement.style.backgroundColor = color.rgba;
             this.infoColorElement.innerHTML = [
                 'rgb: ' + color.rgb,
                 'rgba: ' + color.rgba,
                 'hex: ' + color.hex,
                 'hexa: ' + color.hexa,
-                'time: ' + (Date.now() - timeA) + ' ms'
+                "time: " + time + " ms",
             ].map(function (item) { return "<div class=\"info__item\">" + item + "</div>"; }).join('');
         };
         return App;

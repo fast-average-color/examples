@@ -90,7 +90,7 @@ class App {
     }
 
     start() {
-        this.timer = window.setInterval(this.nextStep.bind(this), 50);
+        this.timer = window.setInterval(this.nextStep.bind(this), 100);
     }
 
     stop() {
@@ -118,12 +118,14 @@ class App {
     }
 
     getColor() {
-        const timeA = Date.now();
+        const timeBefore = Date.now();
         const color = fac.getColor(this.canvas, {
             algorithm: this.algorithm,
             mode: this.isPrecision ? 'precision' : 'speed',
             step: this.step,
         });
+
+        const time = Date.now() - timeBefore;
 
         this.infoElement.style.backgroundColor = color.rgba;
         this.infoColorElement.innerHTML = [
@@ -131,7 +133,7 @@ class App {
             'rgba: ' + color.rgba,
             'hex: ' + color.hex,
             'hexa: ' + color.hexa,
-            'time: ' + (Date.now() - timeA) + ' ms'
+            `time: ${time} ms`,
         ].map(item => `<div class="info__item">${item}</div>`).join('');
     }
 };
