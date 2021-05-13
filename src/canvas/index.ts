@@ -9,11 +9,25 @@ const fac = new FastAverageColor();
 class App {
     canvas = document.querySelector('canvas') as HTMLCanvasElement;
     ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
-    info = document.querySelector('.info') as HTMLElement;
-    infoColor = document.querySelector('.info__color') as HTMLElement;
+
+    infoElement = document.querySelector('.info') as HTMLElement;
+    startElement = document.querySelector('#start') as HTMLButtonElement;
+    infoColorElement = document.querySelector('.info__color') as HTMLElement;
+    precisionElement = document.querySelector('#mode-precision') as HTMLButtonElement;
+    speedElement = document.querySelector('#mode-speed') as HTMLInputElement;
+    stepElement = document.querySelector('#step') as HTMLInputElement;
+    algorithmSimpleElement = document.querySelector('#algorithm-simple') as HTMLInputElement;
+    algorithmSqrtElement = document.querySelector('#algorithm-sqrt') as HTMLInputElement;
+    algorithmDominantElement = document.querySelector('#algorithm-dominant') as HTMLInputElement;
+    width640Element = document.querySelector('#width-640') as HTMLInputElement;
+    width1280Element = document.querySelector('#width-1280') as HTMLInputElement;
+    width2560Element = document.querySelector('#width-2560') as HTMLInputElement;
+
     stoped = false;
     isPrecision = true;
     timer?: number;
+    step = 1;
+    algorithm: 'simple' | 'sqrt' | 'dominant' = 'simple';
 
     constructor() {
         this.bindEvents();
@@ -21,28 +35,57 @@ class App {
     }
 
     bindEvents() {
-        const startElement = document.querySelector('#start') as HTMLButtonElement;
-        startElement.onclick = () => {
+        this.startElement.onclick = () => {
             this.stoped = !this.stoped;
             if (this.stoped) {
-                startElement.innerText = 'Start';
+                this.startElement.innerText = 'Start';
                 this.stop();
             } else {
-                startElement.innerText = 'Stop';
+                this.startElement.innerText = 'Stop';
                 this.start();
             }
         };
 
-        const precisionElement = document.querySelector('#precision') as HTMLButtonElement;
-        precisionElement.onclick = () => {
+        this.precisionElement.onclick = () => {
             this.isPrecision = true;
             this.getColor();
         };
 
-        const speedElement = document.querySelector('#speed') as HTMLInputElement;
-        speedElement.onclick = () => {
+        this.speedElement.onclick = () => {
             this.isPrecision = false;
             this.getColor();
+        };
+
+        this.stepElement.oninput = () => {
+            this.step = Number(this.stepElement.value);
+            this.getColor();
+        };
+
+        this.algorithmSimpleElement.onclick = () => {
+            this.algorithm = 'simple';
+        };
+
+        this.algorithmSqrtElement.onclick = () => {
+            this.algorithm = 'sqrt';
+        };
+
+        this.algorithmDominantElement.onclick = () => {
+            this.algorithm = 'dominant';
+        };
+
+        this.width640Element.onclick = () => {
+            this.canvas.width = 640;
+            this.canvas.height = 480;
+        };
+
+        this.width1280Element.onclick = () => {
+            this.canvas.width = 1280;
+            this.canvas.height = 1024;
+        };
+
+        this.width2560Element.onclick = () => {
+            this.canvas.width = 2560;
+            this.canvas.height = 2048;
         };
     }
 
@@ -77,11 +120,13 @@ class App {
     getColor() {
         const timeA = Date.now();
         const color = fac.getColor(this.canvas, {
-            mode: this.isPrecision ? 'precision' : 'speed'
+            algorithm: this.algorithm,
+            mode: this.isPrecision ? 'precision' : 'speed',
+            step: this.step,
         });
 
-        this.info.style.backgroundColor = color.rgba;
-        this.infoColor.innerHTML = [
+        this.infoElement.style.backgroundColor = color.rgba;
+        this.infoColorElement.innerHTML = [
             'rgb: ' + color.rgb,
             'rgba: ' + color.rgba,
             'hex: ' + color.hex,

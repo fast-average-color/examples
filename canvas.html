@@ -12,12 +12,31 @@
 
     <div class="info">Average color:
         <div class="info__color"></div>
-        <div class="mode">
-            Mode:
-            <label><input name="mode" type="radio" id="precision" autocomplete="off" checked /> precision</label>
-            <label><input name="mode" type="radio" id="speed" autocomplete="off" /> speed</label>
+        <div class="option">
+            Algorithm:
+            <label><input name="algorithm" type="radio" id="algorithm-simple" autocomplete="off" checked /> simple</label>
+            <label><input name="algorithm" type="radio" id="algorithm-sqrt" autocomplete="off" /> sqrt</label>
+            <label><input name="algorithm" type="radio" id="algorithm-dominant" autocomplete="off" /> dominant</label>
         </div>
-         <button id="start">Stop</button>
+
+        <div class="option">
+            Mode:
+            <label><input name="mode" type="radio" id="mode-precision" autocomplete="off" checked /> precision</label>
+            <label><input name="mode" type="radio" id="mode-speed" autocomplete="off" /> speed</label>
+        </div>
+
+        <div class="option">
+            Step: <input id="step" value="1" type="number" size="2" min="1" max="20" />
+        </div>
+
+        <div class="option">
+            Size:
+            <label><input name="width" type="radio" id="width-640" autocomplete="off" checked /> 640×480</label>
+            <label><input name="width" type="radio" id="width-1280" autocomplete="off" /> 1280×1024</label>
+            <label><input name="width" type="radio" id="width-2560" autocomplete="off" /> 2560×2048</label>
+        </div>
+
+        <button id="start">Stop</button>
     </div>
 </body>
 </html>

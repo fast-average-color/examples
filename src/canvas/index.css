@@ -4,10 +4,7 @@ canvas
     top: 50%;
     left: 50%;
 
-    width: 640px;
-    height: 480px;
-    margin-top: -240px;
-    margin-left: -320px;
+    transform: translate(-50%, -50%);
 
     border: 1px solid rgba(100, 100, 100, .5);
 }
@@ -40,11 +37,11 @@ canvas
     text-overflow: ellipsis;
 }
 
-.info__item, .mode {
+.info__item, .option {
     padding: 3px;
 }
 
-.mode {
+.option {
     margin: 5px 0 5px 0;
 }
 

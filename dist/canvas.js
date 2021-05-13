@@ -777,36 +777,70 @@
         function App() {
             this.canvas = document.querySelector('canvas');
             this.ctx = this.canvas.getContext('2d');
-            this.info = document.querySelector('.info');
-            this.infoColor = document.querySelector('.info__color');
+            this.infoElement = document.querySelector('.info');
+            this.startElement = document.querySelector('#start');
+            this.infoColorElement = document.querySelector('.info__color');
+            this.precisionElement = document.querySelector('#mode-precision');
+            this.speedElement = document.querySelector('#mode-speed');
+            this.stepElement = document.querySelector('#step');
+            this.algorithmSimpleElement = document.querySelector('#algorithm-simple');
+            this.algorithmSqrtElement = document.querySelector('#algorithm-sqrt');
+            this.algorithmDominantElement = document.querySelector('#algorithm-dominant');
+            this.width640Element = document.querySelector('#width-640');
+            this.width1280Element = document.querySelector('#width-1280');
+            this.width2560Element = document.querySelector('#width-2560');
             this.stoped = false;
             this.isPrecision = true;
+            this.step = 1;
+            this.algorithm = 'simple';
             this.bindEvents();
             this.start();
         }
         App.prototype.bindEvents = function () {
             var _this = this;
-            var startElement = document.querySelector('#start');
-            startElement.onclick = function () {
+            this.startElement.onclick = function () {
                 _this.stoped = !_this.stoped;
                 if (_this.stoped) {
-                    startElement.innerText = 'Start';
+                    _this.startElement.innerText = 'Start';
                     _this.stop();
                 }
                 else {
-                    startElement.innerText = 'Stop';
+                    _this.startElement.innerText = 'Stop';
                     _this.start();
                 }
             };
-            var precisionElement = document.querySelector('#precision');
-            precisionElement.onclick = function () {
+            this.precisionElement.onclick = function () {
                 _this.isPrecision = true;
                 _this.getColor();
             };
-            var speedElement = document.querySelector('#speed');
-            speedElement.onclick = function () {
+            this.speedElement.onclick = function () {
                 _this.isPrecision = false;
                 _this.getColor();
+            };
+            this.stepElement.oninput = function () {
+                _this.step = Number(_this.stepElement.value);
+                _this.getColor();
+            };
+            this.algorithmSimpleElement.onclick = function () {
+                _this.algorithm = 'simple';
+            };
+            this.algorithmSqrtElement.onclick = function () {
+                _this.algorithm = 'sqrt';
+            };
+            this.algorithmDominantElement.onclick = function () {
+                _this.algorithm = 'dominant';
+            };
+            this.width640Element.onclick = function () {
+                _this.canvas.width = 640;
+                _this.canvas.height = 480;
+            };
+            this.width1280Element.onclick = function () {
+                _this.canvas.width = 1280;
+                _this.canvas.height = 1024;
+            };
+            this.width2560Element.onclick = function () {
+                _this.canvas.width = 2560;
+                _this.canvas.height = 2048;
             };
         };
         App.prototype.start = function () {
@@ -829,10 +863,12 @@
         App.prototype.getColor = function () {
             var timeA = Date.now();
             var color = fac.getColor(this.canvas, {
-                mode: this.isPrecision ? 'precision' : 'speed'
+                algorithm: this.algorithm,
+                mode: this.isPrecision ? 'precision' : 'speed',
+                step: this.step,
             });
-            this.info.style.backgroundColor = color.rgba;
-            this.infoColor.innerHTML = [
+            this.infoElement.style.backgroundColor = color.rgba;
+            this.infoColorElement.innerHTML = [
                 'rgb: ' + color.rgb,
                 'rgba: ' + color.rgba,
                 'hex: ' + color.hex,
