@@ -697,8 +697,8 @@
         }
     }
 
-    function hitExt(params) {
-        var browserInfo = params.browserInfo, counterId = params.counterId, pageParams = params.pageParams, userVars = params.userVars;
+    function hitExt(hitExtParams) {
+        var browserInfo = hitExtParams.browserInfo, counterId = hitExtParams.counterId, pageParams = hitExtParams.pageParams, params = hitExtParams.params;
         var data = {
             'browser-info': getBrowserInfo(browserInfo, pageParams.title),
             rn: getRandom(),
@@ -710,8 +710,8 @@
         if (pageParams.referrer) {
             data['page-ref'] = prepareUrl(pageParams.referrer);
         }
-        if (userVars) {
-            data['site-info'] = JSON.stringify(userVars);
+        if (params) {
+            data['site-info'] = JSON.stringify(params);
         }
         sendData(counterId, data);
     }
@@ -733,7 +733,7 @@
      *     myParam: 'value'
      * });
      */
-    function hit(counterId, hitParams, userVars) {
+    function hit(counterId, hitParams, params) {
         var referrer = hitParams && hitParams.referrer !== undefined ?
             hitParams.referrer :
             getReferrer();
@@ -751,7 +751,7 @@
                 title: title,
                 url: url
             },
-            userVars: userVars
+            params: params
         });
     }
 
@@ -797,7 +797,7 @@
             var color = fac.getColor(image, isBottom ?
                 { top: height - size, height: size } :
                 { height: size });
-            var colorEnd = __spreadArray(__spreadArray([], color.value.slice(0, 3)), [0]).join(',');
+            var colorEnd = __spreadArray(__spreadArray([], color.value.slice(0, 3), true), [0]).join(',');
             item.style.background = color.rgb;
             item.style.color = color.isDark ? 'white' : 'black';
             if (isBottom) {

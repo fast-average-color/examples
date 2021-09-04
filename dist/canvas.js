@@ -683,8 +683,8 @@
         }
     }
 
-    function hitExt(params) {
-        var browserInfo = params.browserInfo, counterId = params.counterId, pageParams = params.pageParams, userVars = params.userVars;
+    function hitExt(hitExtParams) {
+        var browserInfo = hitExtParams.browserInfo, counterId = hitExtParams.counterId, pageParams = hitExtParams.pageParams, params = hitExtParams.params;
         var data = {
             'browser-info': getBrowserInfo(browserInfo, pageParams.title),
             rn: getRandom(),
@@ -696,8 +696,8 @@
         if (pageParams.referrer) {
             data['page-ref'] = prepareUrl(pageParams.referrer);
         }
-        if (userVars) {
-            data['site-info'] = JSON.stringify(userVars);
+        if (params) {
+            data['site-info'] = JSON.stringify(params);
         }
         sendData(counterId, data);
     }
@@ -719,7 +719,7 @@
      *     myParam: 'value'
      * });
      */
-    function hit(counterId, hitParams, userVars) {
+    function hit(counterId, hitParams, params) {
         var referrer = hitParams && hitParams.referrer !== undefined ?
             hitParams.referrer :
             getReferrer();
@@ -737,7 +737,7 @@
                 title: title,
                 url: url
             },
-            userVars: userVars
+            params: params
         });
     }
 

@@ -113,6 +113,7 @@ class App {
     }
 
     capture() {
+        // @ts-ignore
         navigator.getUserMedia({ video: true, audio: false }, mediaStream => {
             // Firefox
             if (!('readyState' in mediaStream)) {
@@ -160,6 +161,7 @@ class App {
     }
 };
 
+// @ts-ignore
 navigator.getUserMedia = navigator.getUserMedia ||
     // @ts-ignore
     navigator.webkitGetUserMedia ||
