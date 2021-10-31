@@ -1,4 +1,4 @@
-import { default as FastAverageColor, IFastAverageColorResult } from 'fast-average-color';
+import { default as FastAverageColor, FastAverageColorResult } from 'fast-average-color';
 
 import '../common';
 import './index.css';
@@ -49,7 +49,7 @@ class App {
         ]);
     }
 
-    addImage(resource: HTMLImageElement, name: string, colors: IFastAverageColorResult[]) {
+    addImage(resource: HTMLImageElement, name: string, colors: FastAverageColorResult[]) {
         const images = document.querySelector('.images') as HTMLDivElement;
         const item = document.createElement('div');
         item.className = 'images__item';
@@ -86,7 +86,7 @@ class App {
         return isDark ? 'white' : 'black';
     }
 
-    getColorInfo(color: IFastAverageColorResult, algorithm: string, checked: boolean) {
+    getColorInfo(color: FastAverageColorResult, algorithm: string, checked: boolean) {
         const text = [
             color.rgb,
             color.rgba,

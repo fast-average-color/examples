@@ -1,4 +1,4 @@
-import { default as FastAverageColor, IFastAverageColorResult } from 'fast-average-color';
+import { default as FastAverageColor, FastAverageColorResult } from 'fast-average-color';
 
 import '../common';
 import './index.css';
@@ -14,7 +14,7 @@ function getGradient(image: HTMLImageElement, padding = 30, count = 10) {
 
     const parts: string[] = [];
 
-    const colors: IFastAverageColorResult[] = [];
+    const colors: FastAverageColorResult[] = [];
     let value = 'linear-gradient(to bottom, ';
 
     for (let i = 0; i < count; i++) {
