@@ -3,7 +3,7 @@
     factory();
 })((function () { 'use strict';
 
-    /*! Fast Average Color | © 2021 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
+    /*! Fast Average Color | © 2022 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
     function toHex(num) {
         var str = num.toString(16);
         return str.length === 1 ? '0' + str : str;
@@ -321,12 +321,13 @@
          * Get asynchronously the average color from not loaded image.
          */
         FastAverageColor.prototype.getColorAsync = function (resource, options) {
+            var _a;
             if (!resource) {
                 return Promise.reject(getError('call .getColorAsync() without resource.'));
             }
             if (typeof resource === 'string') {
                 var img = new Image();
-                img.crossOrigin = '';
+                img.crossOrigin = (_a = options === null || options === void 0 ? void 0 : options.crossOrigin) !== null && _a !== void 0 ? _a : '';
                 img.src = resource;
                 return this.bindImageEvents(img, options);
             }
@@ -351,7 +352,7 @@
             var originalSize = getOriginalSize(resource);
             var size = prepareSizeAndPosition(originalSize, options);
             if (!size.srcWidth || !size.srcHeight || !size.destWidth || !size.destHeight) {
-                outputError("incorrect sizes for resource \"" + getSrc(resource) + "\".", options.silent);
+                outputError("incorrect sizes for resource \"".concat(getSrc(resource), "\"."), options.silent);
                 return this.prepareResult(defaultColor);
             }
             if (!this.canvas) {
@@ -374,7 +375,7 @@
                 value = this.getColorFromArray4(bitmapData, options);
             }
             catch (e) {
-                outputError("security error (CORS) for resource " + getSrc(resource) + ".\nDetails: https://developer.mozilla.org/en/docs/Web/HTML/CORS_enabled_image", options.silent, e);
+                outputError("security error (CORS) for resource ".concat(getSrc(resource), ".\nDetails: https://developer.mozilla.org/en/docs/Web/HTML/CORS_enabled_image"), options.silent, e);
             }
             return this.prepareResult(value);
         };
@@ -403,7 +404,7 @@
                     algorithm = dominantAlgorithm;
                     break;
                 default:
-                    throw getError(options.algorithm + " is unknown algorithm.");
+                    throw getError("".concat(options.algorithm, " is unknown algorithm."));
             }
             return algorithm(arr, len, {
                 defaultColor: defaultColor,
@@ -450,11 +451,11 @@
                 };
                 var onerror = function () {
                     unbindEvents();
-                    reject(getError("Error loading image \"" + resource.src + "\"."));
+                    reject(getError("Error loading image \"".concat(resource.src, "\".")));
                 };
                 var onabort = function () {
                     unbindEvents();
-                    reject(getError("Image \"" + resource.src + "\" loading aborted."));
+                    reject(getError("Image \"".concat(resource.src, "\" loading aborted.")));
                 };
                 var unbindEvents = function () {
                     resource.removeEventListener('load', onload);
@@ -562,7 +563,7 @@
         var hasBeacon = typeof navigator !== 'undefined' && navigator.sendBeacon;
         if (!hasBeacon || !navigator.sendBeacon(url, ' ')) {
             if (typeof fetch !== 'undefined') {
-                fetch(url, { credentials: 'include' });
+                fetch(url, { credentials: 'include' }).catch(function () { });
             }
             else if (typeof Image !== 'undefined') {
                 new Image().src = url;
@@ -631,6 +632,7 @@
     window.addEventListener('load', function () {
         var pages = [
             'background',
+            'timeline',
             'gradient',
             'gradient_stripes',
             'border',
@@ -761,8 +763,8 @@
                 'rgba: ' + color.rgba,
                 'hex: ' + color.hex,
                 'hexa: ' + color.hexa,
-                "time: " + time + " ms",
-            ].map(function (item) { return "<div class=\"info__item\">" + item + "</div>"; }).join('');
+                "time: ".concat(time, " ms"),
+            ].map(function (item) { return "<div class=\"info__item\">".concat(item, "</div>"); }).join('');
         };
         return App;
     }());

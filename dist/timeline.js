@@ -3,6 +3,59 @@
     factory();
 })((function () { 'use strict';
 
+    /*! *****************************************************************************
+    Copyright (c) Microsoft Corporation.
+
+    Permission to use, copy, modify, and/or distribute this software for any
+    purpose with or without fee is hereby granted.
+
+    THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+    REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+    AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+    INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+    LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+    OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+    PERFORMANCE OF THIS SOFTWARE.
+    ***************************************************************************** */
+
+    function __awaiter(thisArg, _arguments, P, generator) {
+        function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+        return new (P || (P = Promise))(function (resolve, reject) {
+            function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+            function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+            function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+            step((generator = generator.apply(thisArg, _arguments || [])).next());
+        });
+    }
+
+    function __generator(thisArg, body) {
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        function verb(n) { return function (v) { return step([n, v]); }; }
+        function step(op) {
+            if (f) throw new TypeError("Generator is already executing.");
+            while (_) try {
+                if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+                if (y = 0, t) op = [op[0] & 2, t.value];
+                switch (op[0]) {
+                    case 0: case 1: t = op; break;
+                    case 4: _.label++; return { value: op[1], done: false };
+                    case 5: _.label++; y = op[1]; op = [0]; continue;
+                    case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                    default:
+                        if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                        if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                        if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                        if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                        if (t[2]) _.ops.pop();
+                        _.trys.pop(); continue;
+                }
+                op = body.call(thisArg, _);
+            } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+            if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+        }
+    }
+
     /*! Fast Average Color | © 2022 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
     function toHex(num) {
         var str = num.toString(16);
@@ -470,6 +523,16 @@
         return FastAverageColor;
     }());
 
+    function leadZero(num) {
+        return num > 9 ? num : '0' + num;
+    }
+    function secsToHMS(value) {
+        var hours = Math.floor(value / 3600);
+        var mins = Math.floor((value - hours * 3600) / 60);
+        var secs = Math.floor(value - hours * 3600 - mins * 60);
+        return [hours, leadZero(mins), leadZero(secs)].join(':');
+    }
+
     var hasDocument = typeof document !== 'undefined';
     var hasWindow = typeof window !== 'undefined';
     var hasNavigator = typeof navigator != 'undefined';
@@ -655,37 +718,131 @@
     }, false);
 
     var fac = new FastAverageColor();
-    window.addEventListener('load', function () {
-        var items = Array.from(document.querySelectorAll('.slider__item'));
-        var border = document.querySelector('.big-image-border');
-        var bigImage = document.querySelector('.big-image');
-        bigImage.classList.remove('big-image_hidden');
-        function onClick(elem) {
-            for (var _i = 0, items_2 = items; _i < items_2.length; _i++) {
-                var item = items_2[_i];
-                item.classList.remove('slider__item_active');
-            }
-            elem.classList.add('slider__item_active');
-            bigImage.src = elem.src;
-            var width = bigImage.naturalWidth;
-            var height = bigImage.naturalHeight;
-            var size = 30;
-            var top = fac.getColor(elem, { left: 0, top: 0, width: width, height: size });
-            var bottom = fac.getColor(elem, { left: 0, top: height - size, width: width, height: size });
-            var left = fac.getColor(elem, { left: 0, top: 0, width: size, height: height });
-            var right = fac.getColor(elem, { left: width - size, top: 0, width: size, height: height });
-            border.style.borderTopColor = top.rgb;
-            border.style.borderRightColor = right.rgb;
-            border.style.borderBottomColor = bottom.rgb;
-            border.style.borderLeftColor = left.rgb;
-        }
-        onClick(items[0]);
-        for (var _i = 0, items_1 = items; _i < items_1.length; _i++) {
-            var item = items_1[_i];
-            item.onclick = function () {
-                onClick(this);
+    var STEP = 1; // sec.
+    var ColorsOfMovies = /** @class */ (function () {
+        function ColorsOfMovies() {
+            var _this = this;
+            this.currentSrc = '';
+            this.isFirstStart = false;
+            this.handleCanPlay = function () {
+                if (!_this.isFirstStart) {
+                    _this.getColorsFromMovie(_this.currentSrc);
+                }
+                _this.isFirstStart = true;
             };
+            this.video = document.querySelector('video');
+            this.averageTimeline = document.querySelector('.timeline_type_average .timeline__colors');
+            // this.averageSqrtTimeline = document.querySelector('.timeline_type_average-sqrt .timeline__colors')!;
+            this.dominantTimeline = document.querySelector('.timeline_type_dominant .timeline__colors');
+            this.radialDemo = document.querySelector('.radial-demo');
+            this.conicDemo = document.querySelector('.conic-demo');
+            this.progress = document.querySelector('.progress');
+            this.selectMovie = document.querySelector('select');
+            this.selectMovie.addEventListener('change', function () {
+                _this.reset();
+                _this.currentSrc = _this.selectMovie.selectedOptions[0].value;
+                if (!_this.currentSrc) {
+                    return;
+                }
+                _this.start(_this.currentSrc);
+            });
+            this.video.addEventListener('canplay', this.handleCanPlay);
+            this.start(this.selectMovie.selectedOptions[0].value);
         }
-    });
+        ColorsOfMovies.prototype.start = function (src) {
+            this.video.src = src;
+            this.isFirstStart = false;
+        };
+        ColorsOfMovies.prototype.getColorsFromMovie = function (src) {
+            return __awaiter(this, void 0, void 0, function () {
+                var duration, startTime, data, width, i, averageColor, averageSqrtColor, dominantColor;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            duration = this.video.duration;
+                            startTime = Date.now();
+                            data = {
+                                duration: duration,
+                                count: 0,
+                                averageColors: [],
+                                averageSqrtColors: [],
+                                dominantColors: [],
+                            };
+                            width = Math.ceil(duration / STEP);
+                            this.averageTimeline.style.width = width + 'px';
+                            this.dominantTimeline.style.width = width + 'px';
+                            i = 0;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i < duration)) return [3 /*break*/, 4];
+                            this.video.currentTime = i;
+                            return [4 /*yield*/, this.waitForSeek()];
+                        case 2:
+                            _a.sent();
+                            if (src !== this.currentSrc) {
+                                return [2 /*return*/];
+                            }
+                            averageColor = fac.getColor(this.video, { algorithm: 'simple' });
+                            averageSqrtColor = fac.getColor(this.video, { algorithm: 'sqrt' });
+                            dominantColor = fac.getColor(this.video, { algorithm: 'dominant' });
+                            data.averageColors.push(averageColor.rgb);
+                            data.averageSqrtColors.push(averageSqrtColor.rgb);
+                            data.dominantColors.push(dominantColor.rgb);
+                            this.addColor(this.averageTimeline, averageColor);
+                            //this.addColor(averageSqrtTimeline, averageSqrtColor);
+                            this.addColor(this.dominantTimeline, dominantColor);
+                            this.progress.innerHTML = [
+                                Math.floor(i / duration * 100) + '%, step: ' + STEP + ' s',
+                                secsToHMS(i) + '&thinsp;/&thinsp;' + secsToHMS(duration),
+                                Math.floor((Date.now() - startTime) / 1000) + ' s'
+                            ].join('<br/>');
+                            this.radialDemo.style.background = 'radial-gradient(' + data.dominantColors.join(',') + ')';
+                            this.conicDemo.style.background = 'conic-gradient(' + data.dominantColors.join(',') + ')';
+                            _a.label = 3;
+                        case 3:
+                            i += STEP;
+                            return [3 /*break*/, 1];
+                        case 4:
+                            this.progress.innerHTML = '';
+                            this.hideVideo();
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        ColorsOfMovies.prototype.reset = function () {
+            this.radialDemo.style.background = '';
+            this.conicDemo.style.background = '';
+            this.averageTimeline.innerHTML = '';
+            this.dominantTimeline.innerHTML = '';
+            this.progress.innerHTML = '';
+            this.isFirstStart = false;
+            this.video.removeEventListener('canplay', this.handleCanPlay);
+            this.showVideo();
+        };
+        ColorsOfMovies.prototype.showVideo = function () {
+            this.video.style.display = 'block';
+        };
+        ColorsOfMovies.prototype.hideVideo = function () {
+            this.video.style.display = 'none';
+        };
+        ColorsOfMovies.prototype.addColor = function (container, value) {
+            var div = document.createElement('div');
+            div.className = 'timeline__color';
+            div.style.backgroundColor = value.rgb;
+            container.appendChild(div);
+        };
+        ColorsOfMovies.prototype.waitForSeek = function () {
+            var _this = this;
+            return new Promise(function (resolve) {
+                _this.video.onseeked = function () {
+                    _this.video.onseeked = null;
+                    resolve();
+                };
+            });
+        };
+        return ColorsOfMovies;
+    }());
+    new ColorsOfMovies();
 
 }));
