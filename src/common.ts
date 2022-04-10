@@ -5,6 +5,7 @@ import './common.css';
 window.addEventListener('load', () => {
     const pages = [
         'background',
+        'timeline',
         'gradient',
         'gradient_stripes',
         'border',
