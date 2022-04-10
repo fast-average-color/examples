@@ -723,12 +723,9 @@
         function ColorsOfMovies() {
             var _this = this;
             this.currentSrc = '';
-            this.isFirstStart = false;
             this.handleCanPlay = function () {
-                if (!_this.isFirstStart) {
-                    _this.getColorsFromMovie(_this.currentSrc);
-                }
-                _this.isFirstStart = true;
+                _this.getColorsFromMovie(_this.currentSrc);
+                _this.video.removeEventListener('canplay', _this.handleCanPlay);
             };
             this.video = document.querySelector('video');
             this.averageTimeline = document.querySelector('.timeline_type_average .timeline__colors');
@@ -746,12 +743,12 @@
                 }
                 _this.start(_this.currentSrc);
             });
-            this.video.addEventListener('canplay', this.handleCanPlay);
             this.start(this.selectMovie.selectedOptions[0].value);
         }
         ColorsOfMovies.prototype.start = function (src) {
             this.video.src = src;
-            this.isFirstStart = false;
+            this.video.removeEventListener('canplay', this.handleCanPlay);
+            this.video.addEventListener('canplay', this.handleCanPlay);
         };
         ColorsOfMovies.prototype.getColorsFromMovie = function (src) {
             return __awaiter(this, void 0, void 0, function () {
@@ -816,7 +813,6 @@
             this.averageTimeline.innerHTML = '';
             this.dominantTimeline.innerHTML = '';
             this.progress.innerHTML = '';
-            this.isFirstStart = false;
             this.video.removeEventListener('canplay', this.handleCanPlay);
             this.showVideo();
         };

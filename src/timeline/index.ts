@@ -26,8 +26,6 @@ class ColorsOfMovies {
     private progress: HTMLDivElement;
     private selectMovie: HTMLSelectElement;
 
-    private isFirstStart = false;
-
     constructor() {
         this.video = document.querySelector('video')!;
         this.averageTimeline = document.querySelector('.timeline_type_average .timeline__colors')!;
@@ -51,22 +49,18 @@ class ColorsOfMovies {
             this.start(this.currentSrc);
         });
 
-        this.video.addEventListener('canplay', this.handleCanPlay);    
-
         this.start(this.selectMovie.selectedOptions[0].value);
     }
 
     public start(src: string) {
         this.video.src = src;
-        this.isFirstStart = false;
+        this.video.removeEventListener('canplay', this.handleCanPlay);
+        this.video.addEventListener('canplay', this.handleCanPlay);    
     }
 
     private handleCanPlay = () => {
-        if (!this.isFirstStart) {
-            this.getColorsFromMovie(this.currentSrc);
-        }    
-        
-        this.isFirstStart = true;
+        this.getColorsFromMovie(this.currentSrc);
+        this.video.removeEventListener('canplay', this.handleCanPlay);
     }
 
     async getColorsFromMovie(src: string)  {
@@ -126,7 +120,6 @@ class ColorsOfMovies {
         this.averageTimeline.innerHTML = '';
         this.dominantTimeline.innerHTML = '';
         this.progress.innerHTML = '';
-        this.isFirstStart = false;
     
         this.video.removeEventListener('canplay', this.handleCanPlay);
     
