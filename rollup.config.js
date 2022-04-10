@@ -33,6 +33,7 @@ const configs = [
     'gradient_stripes',
     'gallery',
     'define',
+    'timeline',
 ].map(name => createConfig(name));
 
 export default configs;
