@@ -23,13 +23,13 @@
   "homepage": "https://github.com/fast-average-color/examples#readme",
   "private": true,
   "devDependencies": {
-    "@rollup/plugin-node-resolve": "^13.0.6",
-    "@rollup/plugin-typescript": "^8.3.0",
-    "fast-average-color": "^7.0.1",
-    "lyam": "^2.0.0",
-    "rollup": "^2.58.3",
+    "@rollup/plugin-node-resolve": "^13.1.3",
+    "@rollup/plugin-typescript": "^8.3.1",
+    "fast-average-color": "^7.1.0",
+    "lyam": "^3.0.1",
+    "rollup": "^2.70.1",
     "rollup-plugin-css-only": "^3.1.0",
     "tslib": "^2.3.1",
-    "typescript": "^4.4.4"
+    "typescript": "^4.6.3"
   }
 }
