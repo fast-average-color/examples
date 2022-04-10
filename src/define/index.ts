@@ -127,6 +127,7 @@ class App {
             if (window.HTMLMediaElement) {
                 video.srcObject = previewStream; // Safari 11 doesn't allow use of createObjectURL for MediaStream
             } else {
+                // @ts-ignore
                 video.src = URL.createObjectURL(previewStream);
             }
 
