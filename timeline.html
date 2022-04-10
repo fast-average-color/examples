@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Colors of movies</title>
+  <meta charset="utf-8" />
+  <link href="dist/timeline.css" rel="stylesheet" />
+  </style>
+</head>
+<body>
+    <div class="movie-selector">Movie: <select id="movies">
+      <option value="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4">Big Buck Bunny</option>
+      <option value="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4">Blender Open Movie from 2006</option>
+      <option value="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4">Sintel</option>
+      <option value="http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4">Tears of Steel</option> 
+    </select></div>
+
+    <div class="progress"></div>
+
+    <div class="timeline timeline_type_average">
+      <div class="timeline__label">Average:</div>
+      <div class="timeline__colors"></div>
+    </div>
+    <!--<div class="timeline timeline_type_average-sqrt">
+      <div class="timeline__label">Average sqrt:</div>
+      <div class="timeline__colors"></div>
+    </div>-->
+    <div class="timeline timeline_type_dominant">
+      <div class="timeline__label">Dominant:</div>
+      <div class="timeline__colors"></div>
+    </div>
+
+    <div class="demo">
+      <div class="radial-demo"></div><div class="conic-demo"></div>
+    </div>
+
+    <video crossorigin="Anonymous" src="about:blank"></video>
+    <script src="dist/timeline.js"></script>
+</body>
+</html>
