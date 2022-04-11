@@ -39,13 +39,7 @@ class ColorsOfMovies {
 
         this.selectMovie = document.querySelector('select')!;
         this.selectMovie.addEventListener('change', () => {
-            this.reset();
-            this.currentSrc = this.selectMovie.selectedOptions[0].value;
-        
-            if (!this.currentSrc) {
-                return;
-            }
-        
+            this.currentSrc = this.selectMovie.selectedOptions[0].value;        
             this.start(this.currentSrc);
         });
 
@@ -53,9 +47,12 @@ class ColorsOfMovies {
     }
 
     public start(src: string) {
-        this.video.src = src;
-        this.video.removeEventListener('canplay', this.handleCanPlay);
-        this.video.addEventListener('canplay', this.handleCanPlay);    
+        this.reset();
+
+        if (src) {
+            this.video.src = src;
+            this.video.addEventListener('canplay', this.handleCanPlay);    
+        }
     }
 
     private handleCanPlay = () => {

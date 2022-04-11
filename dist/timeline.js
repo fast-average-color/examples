@@ -736,19 +736,17 @@
             this.progress = document.querySelector('.progress');
             this.selectMovie = document.querySelector('select');
             this.selectMovie.addEventListener('change', function () {
-                _this.reset();
                 _this.currentSrc = _this.selectMovie.selectedOptions[0].value;
-                if (!_this.currentSrc) {
-                    return;
-                }
                 _this.start(_this.currentSrc);
             });
             this.start(this.selectMovie.selectedOptions[0].value);
         }
         ColorsOfMovies.prototype.start = function (src) {
-            this.video.src = src;
-            this.video.removeEventListener('canplay', this.handleCanPlay);
-            this.video.addEventListener('canplay', this.handleCanPlay);
+            this.reset();
+            if (src) {
+                this.video.src = src;
+                this.video.addEventListener('canplay', this.handleCanPlay);
+            }
         };
         ColorsOfMovies.prototype.getColorsFromMovie = function (src) {
             return __awaiter(this, void 0, void 0, function () {
