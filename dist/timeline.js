@@ -734,10 +734,23 @@
             this.radialDemo = document.querySelector('.radial-demo');
             this.conicDemo = document.querySelector('.conic-demo');
             this.progress = document.querySelector('.progress');
-            this.selectMovie = document.querySelector('select');
+            this.selectMovie = document.querySelector('.movies');
             this.selectMovie.addEventListener('change', function () {
                 _this.currentSrc = _this.selectMovie.selectedOptions[0].value;
                 _this.start(_this.currentSrc);
+            });
+            this.uploadFile = document.querySelector('.upload-file');
+            var that = this;
+            this.uploadFile.addEventListener('change', function () {
+                var files = this.files;
+                if (files) {
+                    var file = files.item(0);
+                    if (file) {
+                        var src = URL.createObjectURL(file);
+                        that.currentSrc = src;
+                        that.start(src);
+                    }
+                }
             });
             this.start(this.selectMovie.selectedOptions[0].value);
         }

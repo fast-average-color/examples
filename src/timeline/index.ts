@@ -25,6 +25,7 @@ class ColorsOfMovies {
     private conicDemo: HTMLDivElement;
     private progress: HTMLDivElement;
     private selectMovie: HTMLSelectElement;
+    private uploadFile: HTMLInputElement;
 
     constructor() {
         this.video = document.querySelector('video')!;
@@ -37,11 +38,28 @@ class ColorsOfMovies {
         
         this.progress = document.querySelector('.progress')!;
 
-        this.selectMovie = document.querySelector('select')!;
+        this.selectMovie = document.querySelector('.movies')!;
         this.selectMovie.addEventListener('change', () => {
             this.currentSrc = this.selectMovie.selectedOptions[0].value;        
             this.start(this.currentSrc);
         });
+
+        this.uploadFile = document.querySelector('.upload-file')!;
+
+        const that = this;
+        this.uploadFile.addEventListener('change', function() {
+            const files = this.files;
+
+            if (files) {
+                const file = files.item(0);
+                if (file) {
+                    const src = URL.createObjectURL(file);
+                    that.currentSrc = src;
+
+                    that.start(src);
+                }
+            }            
+        });        
 
         this.start(this.selectMovie.selectedOptions[0].value);
     }
