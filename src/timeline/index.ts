@@ -24,6 +24,7 @@ class ColorsOfMovies {
     private dominantTimeline: HTMLCanvasElement;
     private radialDemo: HTMLDivElement;
     private conicDemo: HTMLDivElement;
+    private title: HTMLDivElement;
     private progress: HTMLDivElement;
     private selectMovie: HTMLSelectElement;
     private uploadFile: HTMLInputElement;
@@ -36,6 +37,7 @@ class ColorsOfMovies {
         
         this.radialDemo = document.querySelector('.radial-demo')!;
         this.conicDemo = document.querySelector('.conic-demo')!;
+        this.title = document.querySelector('.title')!;
         
         this.progress = document.querySelector('.progress')!;
 
@@ -127,6 +129,8 @@ class ColorsOfMovies {
             this.conicDemo.style.background = 'conic-gradient(' + data.dominantColors.join(',') + ')';
         }
     
+        this.title.style.background = 'linear-gradient(90deg,' + data.dominantColors.join(',') + ')';
+        this.title.style.backgroundClip = 'text';
         this.progress.innerHTML = '';
     
         this.hideVideo();
@@ -135,6 +139,7 @@ class ColorsOfMovies {
     private reset() {
         this.radialDemo.style.background = ''; 
         this.conicDemo.style.background = ''; 
+        this.title.style.background = '';
         this.resetCanvas(this.averageTimeline);
         this.resetCanvas(this.dominantTimeline);
         this.progress.innerHTML = '';

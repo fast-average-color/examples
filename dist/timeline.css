@@ -61,6 +61,28 @@ body {
     padding: 10px;
 }
 
+.title-container {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 10px;
+    text-align: center;
+}
+
+.title {
+    display: inline-block;
+    margin: 0 auto;
+    padding: 0;
+    color: #fff;
+    font-size: 30px;
+    font-weight: normal;
+    line-height: 30px;
+    background: linear-gradient(90deg, #555, #fff);
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    white-space: nowrap;
+}
+
 .timeline {
     margin: 0 0 10px 0;
 }

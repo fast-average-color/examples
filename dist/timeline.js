@@ -734,6 +734,7 @@
             this.dominantTimeline = document.querySelector('.timeline_type_dominant .timeline__colors');
             this.radialDemo = document.querySelector('.radial-demo');
             this.conicDemo = document.querySelector('.conic-demo');
+            this.title = document.querySelector('.title');
             this.progress = document.querySelector('.progress');
             this.selectMovie = document.querySelector('.movies');
             this.selectMovie.addEventListener('change', function () {
@@ -814,6 +815,8 @@
                             i += STEP;
                             return [3 /*break*/, 1];
                         case 4:
+                            this.title.style.background = 'linear-gradient(90deg,' + data.dominantColors.join(',') + ')';
+                            this.title.style.backgroundClip = 'text';
                             this.progress.innerHTML = '';
                             this.hideVideo();
                             return [2 /*return*/];
@@ -824,6 +827,7 @@
         ColorsOfMovies.prototype.reset = function () {
             this.radialDemo.style.background = '';
             this.conicDemo.style.background = '';
+            this.title.style.background = '';
             this.resetCanvas(this.averageTimeline);
             this.resetCanvas(this.dominantTimeline);
             this.progress.innerHTML = '';
