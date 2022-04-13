@@ -10,11 +10,13 @@ const STEP = 1; // sec.
 const TIMELINE_HEIGHT = 50;
 
 interface ColorsOfMoviesData {
+    step: number;
     count: number;
     duration: number,
     averageColors: string[],
     averageSqrtColors: string[],
     dominantColors: string[],
+    palette: number[][];
 }
 
 class ColorsOfMovies {
@@ -28,6 +30,7 @@ class ColorsOfMovies {
     private progress: HTMLDivElement;
     private selectMovie: HTMLSelectElement;
     private uploadFile: HTMLInputElement;
+    private originalDocumentTitle = document.title;
 
     constructor() {
         this.video = document.querySelector('video')!;
@@ -86,11 +89,13 @@ class ColorsOfMovies {
         const startTime = Date.now();
     
         const data: ColorsOfMoviesData = {
+            step: STEP,
             duration: duration,
             count: 0,
             averageColors: [],
             averageSqrtColors: [],
             dominantColors: [],
+            palette: [],
         };
     
         const width = Math.ceil(duration / STEP);
@@ -119,11 +124,14 @@ class ColorsOfMovies {
             //this.addColor(averageSqrtTimeline, averageSqrtColor, i);
             this.addColor(this.dominantTimeline, dominantColor, i);
     
+            const percents = Math.floor(i / duration * 100) + '%';
             this.progress.innerHTML = [
-                Math.floor(i / duration * 100) + '%, step: ' + STEP + ' s',
+                percents + ', step: ' + STEP + ' s',
                 secsToHMS(i) + '&thinsp;/&thinsp;' + secsToHMS(duration),
                 Math.floor((Date.now() - startTime) / 1000) + ' s'
             ].join('<br/>');
+
+            document.title = this.originalDocumentTitle + ' — ' + percents;
     
             this.radialDemo.style.background = 'radial-gradient(' + data.dominantColors.join(',') + ')';
             this.conicDemo.style.background = 'conic-gradient(' + data.dominantColors.join(',') + ')';
@@ -132,11 +140,13 @@ class ColorsOfMovies {
         this.title.style.background = 'linear-gradient(90deg,' + data.dominantColors.join(',') + ')';
         this.title.style.backgroundClip = 'text';
         this.progress.innerHTML = '';
+        document.title = this.originalDocumentTitle;
     
         this.hideVideo();
     }
 
     private reset() {
+        document.title = this.originalDocumentTitle;
         this.radialDemo.style.background = ''; 
         this.conicDemo.style.background = ''; 
         this.title.style.background = '';

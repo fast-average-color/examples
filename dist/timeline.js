@@ -724,6 +724,7 @@
         function ColorsOfMovies() {
             var _this = this;
             this.currentSrc = '';
+            this.originalDocumentTitle = document.title;
             this.handleCanPlay = function () {
                 _this.getColorsFromMovie(_this.currentSrc);
                 _this.video.removeEventListener('canplay', _this.handleCanPlay);
@@ -765,18 +766,20 @@
         };
         ColorsOfMovies.prototype.getColorsFromMovie = function (src) {
             return __awaiter(this, void 0, void 0, function () {
-                var duration, startTime, data, width, i, averageColor, averageSqrtColor, dominantColor;
+                var duration, startTime, data, width, i, averageColor, averageSqrtColor, dominantColor, percents;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             duration = this.video.duration;
                             startTime = Date.now();
                             data = {
+                                step: STEP,
                                 duration: duration,
                                 count: 0,
                                 averageColors: [],
                                 averageSqrtColors: [],
                                 dominantColors: [],
+                                palette: [],
                             };
                             width = Math.ceil(duration / STEP);
                             this.averageTimeline.width = width;
@@ -803,11 +806,13 @@
                             this.addColor(this.averageTimeline, averageColor, i);
                             //this.addColor(averageSqrtTimeline, averageSqrtColor, i);
                             this.addColor(this.dominantTimeline, dominantColor, i);
+                            percents = Math.floor(i / duration * 100) + '%';
                             this.progress.innerHTML = [
-                                Math.floor(i / duration * 100) + '%, step: ' + STEP + ' s',
+                                percents + ', step: ' + STEP + ' s',
                                 secsToHMS(i) + '&thinsp;/&thinsp;' + secsToHMS(duration),
                                 Math.floor((Date.now() - startTime) / 1000) + ' s'
                             ].join('<br/>');
+                            document.title = this.originalDocumentTitle + ' — ' + percents;
                             this.radialDemo.style.background = 'radial-gradient(' + data.dominantColors.join(',') + ')';
                             this.conicDemo.style.background = 'conic-gradient(' + data.dominantColors.join(',') + ')';
                             _a.label = 3;
@@ -818,6 +823,7 @@
                             this.title.style.background = 'linear-gradient(90deg,' + data.dominantColors.join(',') + ')';
                             this.title.style.backgroundClip = 'text';
                             this.progress.innerHTML = '';
+                            document.title = this.originalDocumentTitle;
                             this.hideVideo();
                             return [2 /*return*/];
                     }
@@ -825,6 +831,7 @@
             });
         };
         ColorsOfMovies.prototype.reset = function () {
+            document.title = this.originalDocumentTitle;
             this.radialDemo.style.background = '';
             this.conicDemo.style.background = '';
             this.title.style.background = '';
