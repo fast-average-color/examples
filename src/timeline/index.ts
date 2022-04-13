@@ -7,6 +7,7 @@ import './index.css';
 const fac = new FastAverageColor();
 
 const STEP = 1; // sec.
+const TIMELINE_HEIGHT = 50;
 
 interface ColorsOfMoviesData {
     count: number;
@@ -19,8 +20,8 @@ interface ColorsOfMoviesData {
 class ColorsOfMovies {
     private video: HTMLVideoElement;
     private currentSrc: string = '';
-    private dominantTimeline: HTMLDivElement;
-    private averageTimeline: HTMLDivElement;
+    private averageTimeline: HTMLCanvasElement;
+    private dominantTimeline: HTMLCanvasElement;
     private radialDemo: HTMLDivElement;
     private conicDemo: HTMLDivElement;
     private progress: HTMLDivElement;
@@ -91,8 +92,10 @@ class ColorsOfMovies {
         };
     
         const width = Math.ceil(duration / STEP);
-        this.averageTimeline.style.width = width + 'px';
-        this.dominantTimeline.style.width = width + 'px';
+        this.averageTimeline.width = width;
+        this.averageTimeline.height = TIMELINE_HEIGHT;
+        this.dominantTimeline.width = width;
+        this.dominantTimeline.height = TIMELINE_HEIGHT;
     
         for (let i = 0; i < duration; i += STEP) {
             this.video.currentTime = i;
@@ -110,9 +113,9 @@ class ColorsOfMovies {
             data.averageSqrtColors.push(averageSqrtColor.rgb);
             data.dominantColors.push(dominantColor.rgb);
     
-            this.addColor(this.averageTimeline, averageColor);
-            //this.addColor(averageSqrtTimeline, averageSqrtColor);
-            this.addColor(this.dominantTimeline, dominantColor);
+            this.addColor(this.averageTimeline, averageColor, i);
+            //this.addColor(averageSqrtTimeline, averageSqrtColor, i);
+            this.addColor(this.dominantTimeline, dominantColor, i);
     
             this.progress.innerHTML = [
                 Math.floor(i / duration * 100) + '%, step: ' + STEP + ' s',
@@ -132,14 +135,21 @@ class ColorsOfMovies {
     private reset() {
         this.radialDemo.style.background = ''; 
         this.conicDemo.style.background = ''; 
-        this.averageTimeline.innerHTML = '';
-        this.dominantTimeline.innerHTML = '';
+        this.resetCanvas(this.averageTimeline);
+        this.resetCanvas(this.dominantTimeline);
         this.progress.innerHTML = '';
     
         this.video.removeEventListener('canplay', this.handleCanPlay);
     
         this.showVideo();
-    }    
+    }  
+    
+    private resetCanvas(canvas: HTMLCanvasElement) {
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    }
 
     private showVideo() {
         this.video.style.display = 'block';
@@ -149,11 +159,18 @@ class ColorsOfMovies {
         this.video.style.display = 'none';
     }
     
-    private addColor(container: HTMLDivElement, value: FastAverageColorResult) {
-        const div = document.createElement('div');
-        div.className = 'timeline__color';
-        div.style.backgroundColor = value.rgb;
-        container.appendChild(div);
+    private addColor(
+        canvas: HTMLCanvasElement,
+        color: FastAverageColorResult,
+        x: number,
+    ) {
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+
+        ctx.moveTo(x, 0);
+        ctx.fillStyle = color.rgba;
+        ctx.lineWidth = 1;
+        ctx.fillRect(x, 0, 1, TIMELINE_HEIGHT);
     }
     
     private waitForSeek() {

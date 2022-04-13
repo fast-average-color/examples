@@ -719,6 +719,7 @@
 
     var fac = new FastAverageColor();
     var STEP = 1; // sec.
+    var TIMELINE_HEIGHT = 50;
     var ColorsOfMovies = /** @class */ (function () {
         function ColorsOfMovies() {
             var _this = this;
@@ -777,8 +778,10 @@
                                 dominantColors: [],
                             };
                             width = Math.ceil(duration / STEP);
-                            this.averageTimeline.style.width = width + 'px';
-                            this.dominantTimeline.style.width = width + 'px';
+                            this.averageTimeline.width = width;
+                            this.averageTimeline.height = TIMELINE_HEIGHT;
+                            this.dominantTimeline.width = width;
+                            this.dominantTimeline.height = TIMELINE_HEIGHT;
                             i = 0;
                             _a.label = 1;
                         case 1:
@@ -796,9 +799,9 @@
                             data.averageColors.push(averageColor.rgb);
                             data.averageSqrtColors.push(averageSqrtColor.rgb);
                             data.dominantColors.push(dominantColor.rgb);
-                            this.addColor(this.averageTimeline, averageColor);
-                            //this.addColor(averageSqrtTimeline, averageSqrtColor);
-                            this.addColor(this.dominantTimeline, dominantColor);
+                            this.addColor(this.averageTimeline, averageColor, i);
+                            //this.addColor(averageSqrtTimeline, averageSqrtColor, i);
+                            this.addColor(this.dominantTimeline, dominantColor, i);
                             this.progress.innerHTML = [
                                 Math.floor(i / duration * 100) + '%, step: ' + STEP + ' s',
                                 secsToHMS(i) + '&thinsp;/&thinsp;' + secsToHMS(duration),
@@ -821,11 +824,17 @@
         ColorsOfMovies.prototype.reset = function () {
             this.radialDemo.style.background = '';
             this.conicDemo.style.background = '';
-            this.averageTimeline.innerHTML = '';
-            this.dominantTimeline.innerHTML = '';
+            this.resetCanvas(this.averageTimeline);
+            this.resetCanvas(this.dominantTimeline);
             this.progress.innerHTML = '';
             this.video.removeEventListener('canplay', this.handleCanPlay);
             this.showVideo();
+        };
+        ColorsOfMovies.prototype.resetCanvas = function (canvas) {
+            var ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }
         };
         ColorsOfMovies.prototype.showVideo = function () {
             this.video.style.display = 'block';
@@ -833,11 +842,14 @@
         ColorsOfMovies.prototype.hideVideo = function () {
             this.video.style.display = 'none';
         };
-        ColorsOfMovies.prototype.addColor = function (container, value) {
-            var div = document.createElement('div');
-            div.className = 'timeline__color';
-            div.style.backgroundColor = value.rgb;
-            container.appendChild(div);
+        ColorsOfMovies.prototype.addColor = function (canvas, color, x) {
+            var ctx = canvas.getContext('2d');
+            if (!ctx)
+                return;
+            ctx.moveTo(x, 0);
+            ctx.fillStyle = color.rgba;
+            ctx.lineWidth = 1;
+            ctx.fillRect(x, 0, 1, TIMELINE_HEIGHT);
         };
         ColorsOfMovies.prototype.waitForSeek = function () {
             var _this = this;
