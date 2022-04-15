@@ -790,7 +790,6 @@
                             duration = this.video.duration;
                             startTime = Date.now();
                             step = this.getStep(duration);
-                            console.log('step', step, duration, screen.availWidth);
                             data = {
                                 step: step,
                                 duration: duration,

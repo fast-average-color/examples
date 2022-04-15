@@ -111,9 +111,7 @@ class ColorsOfMovies {
     async getColorsFromMovie(src: string)  {
         const duration = this.video.duration;
         const startTime = Date.now();
-        const step = this.getStep(duration);
-        console.log('step', step, duration, screen.availWidth);
-    
+        const step = this.getStep(duration);    
         const data: ColorsOfMoviesData = {
             step,
             duration: duration,
