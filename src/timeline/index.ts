@@ -6,7 +6,6 @@ import './index.css';
 
 const fac = new FastAverageColor();
 
-const STEP = 1; // sec.
 const TIMELINE_HEIGHT = 50;
 
 interface ColorsOfMoviesData {
@@ -26,6 +25,7 @@ class ColorsOfMovies {
     private dominantTimeline: HTMLCanvasElement;
     private radialDemo: HTMLDivElement;
     private conicDemo: HTMLDivElement;
+    private spinner: HTMLDivElement;
     private title: HTMLDivElement;
     private progress: HTMLDivElement;
     private selectMovie: HTMLSelectElement;
@@ -35,8 +35,8 @@ class ColorsOfMovies {
     constructor() {
         this.video = document.querySelector('video')!;
         this.averageTimeline = document.querySelector('.timeline_type_average .timeline__colors')!;
-        // this.averageSqrtTimeline = document.querySelector('.timeline_type_average-sqrt .timeline__colors')!;
         this.dominantTimeline = document.querySelector('.timeline_type_dominant .timeline__colors')!;
+        this.spinner = document.querySelector('.spinner')!;
         
         this.radialDemo = document.querySelector('.radial-demo')!;
         this.conicDemo = document.querySelector('.conic-demo')!;
@@ -72,6 +72,7 @@ class ColorsOfMovies {
 
     public start(src: string) {
         this.reset();
+        this.showSpinner();
 
         if (src) {
             this.video.src = src;
@@ -79,17 +80,42 @@ class ColorsOfMovies {
         }
     }
 
+    private getStep(duration: number) {
+        let step = Math.ceil(duration / document.documentElement.clientWidth);
+
+        if (step < 1) {
+            step = 1;
+        }
+
+        if (step > 10) {
+            step = 10;
+        }
+
+        return step;
+    }
+
     private handleCanPlay = () => {
         this.getColorsFromMovie(this.currentSrc);
+        this.hideSpinner();
         this.video.removeEventListener('canplay', this.handleCanPlay);
+    }
+
+    private hideSpinner() {
+        this.spinner.style.display = 'none';
+    }
+
+    private showSpinner() {
+        this.spinner.style.display = 'block';
     }
 
     async getColorsFromMovie(src: string)  {
         const duration = this.video.duration;
         const startTime = Date.now();
+        const step = this.getStep(duration);
+        console.log('step', step, duration, screen.availWidth);
     
         const data: ColorsOfMoviesData = {
-            step: STEP,
+            step,
             duration: duration,
             count: 0,
             averageColors: [],
@@ -98,13 +124,14 @@ class ColorsOfMovies {
             palette: [],
         };
     
-        const width = Math.ceil(duration / STEP);
+        const width = Math.ceil(duration / step);
         this.averageTimeline.width = width;
         this.averageTimeline.height = TIMELINE_HEIGHT;
         this.dominantTimeline.width = width;
         this.dominantTimeline.height = TIMELINE_HEIGHT;
     
-        for (let i = 0; i < duration; i += STEP) {
+        let x = 0;
+        for (let i = 0; i < duration; i += step) {
             this.video.currentTime = i;
             await this.waitForSeek();
     
@@ -120,21 +147,22 @@ class ColorsOfMovies {
             data.averageSqrtColors.push(averageSqrtColor.rgb);
             data.dominantColors.push(dominantColor.rgb);
     
-            this.addColor(this.averageTimeline, averageColor, i);
-            //this.addColor(averageSqrtTimeline, averageSqrtColor, i);
-            this.addColor(this.dominantTimeline, dominantColor, i);
+            this.addColor(this.averageTimeline, averageColor, x);
+            this.addColor(this.dominantTimeline, dominantColor, x);
     
             const percents = Math.floor(i / duration * 100) + '%';
             this.progress.innerHTML = [
-                percents + ', step: ' + STEP + ' s',
+                percents + ', step: ' + step + ' s',
                 secsToHMS(i) + '&thinsp;/&thinsp;' + secsToHMS(duration),
                 Math.floor((Date.now() - startTime) / 1000) + ' s'
             ].join('<br/>');
 
-            document.title = this.originalDocumentTitle + ' — ' + percents;
+            document.title = percents + ' — ' + this.originalDocumentTitle;
     
             this.radialDemo.style.background = 'radial-gradient(' + data.dominantColors.join(',') + ')';
             this.conicDemo.style.background = 'conic-gradient(' + data.dominantColors.join(',') + ')';
+
+            x++;
         }
     
         this.title.style.background = 'linear-gradient(90deg,' + data.dominantColors.join(',') + ')';
@@ -146,12 +174,15 @@ class ColorsOfMovies {
     }
 
     private reset() {
-        document.title = this.originalDocumentTitle;
-        this.radialDemo.style.background = ''; 
-        this.conicDemo.style.background = ''; 
         this.title.style.background = '';
+        document.title = this.originalDocumentTitle;
+
+        this.radialDemo.style.background = ''; 
+        this.conicDemo.style.background = '';         
+
         this.resetCanvas(this.averageTimeline);
         this.resetCanvas(this.dominantTimeline);
+
         this.progress.innerHTML = '';
     
         this.video.removeEventListener('canplay', this.handleCanPlay);
@@ -182,9 +213,7 @@ class ColorsOfMovies {
         const ctx = canvas.getContext('2d');
         if (!ctx) return;
 
-        ctx.moveTo(x, 0);
         ctx.fillStyle = color.rgba;
-        ctx.lineWidth = 1;
         ctx.fillRect(x, 0, 1, TIMELINE_HEIGHT);
     }
     
