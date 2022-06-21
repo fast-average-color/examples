@@ -1,4 +1,4 @@
-import FastAverageColor from 'fast-average-color';
+import { FastAverageColor } from 'fast-average-color';
 import { AmbilightBase } from './base';
 
 const fac = new FastAverageColor();

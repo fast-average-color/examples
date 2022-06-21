@@ -1,4 +1,4 @@
-import { default as FastAverageColor, FastAverageColorResult } from 'fast-average-color';
+import { FastAverageColor, FastAverageColorResult } from 'fast-average-color';
 
 import '../common';
 import './index.css';

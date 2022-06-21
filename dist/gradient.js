@@ -3,7 +3,7 @@
     factory();
 })((function () { 'use strict';
 
-    /*! *****************************************************************************
+    /******************************************************************************
     Copyright (c) Microsoft Corporation.
 
     Permission to use, copy, modify, and/or distribute this software for any
@@ -253,7 +253,7 @@
         if (resource instanceof HTMLImageElement) {
             var width = resource.naturalWidth;
             var height = resource.naturalHeight;
-            // For SVG images with only viewBox attr.
+            // For SVG images with only viewBox attribute
             if (!resource.naturalWidth && isSvg(resource.src)) {
                 width = height = MAX_SIZE;
             }
@@ -274,7 +274,16 @@
         };
     }
     function getSrc(resource) {
-        return resource instanceof HTMLCanvasElement ? 'canvas' : resource.src;
+        if (resource instanceof HTMLCanvasElement) {
+            return 'canvas';
+        }
+        if (resource instanceof OffscreenCanvas) {
+            return 'offscreencanvas';
+        }
+        if (resource instanceof ImageBitmap) {
+            return 'imagebitmap';
+        }
+        return resource.src;
     }
     function prepareSizeAndPosition(originalSize, options) {
         var srcLeft = getOption(options, 'left', 0);
@@ -318,8 +327,9 @@
             destHeight: destHeight
         };
     }
+    var isWebWorkers = typeof window === 'undefined';
     function makeCanvas() {
-        return typeof window === 'undefined' ?
+        return isWebWorkers ?
             new OffscreenCanvas(1, 1) :
             document.createElement('canvas');
     }
@@ -346,13 +356,16 @@
          * Get asynchronously the average color from not loaded image.
          */
         FastAverageColor.prototype.getColorAsync = function (resource, options) {
-            var _a;
             if (!resource) {
                 return Promise.reject(getError('call .getColorAsync() without resource.'));
             }
             if (typeof resource === 'string') {
+                // Web workers
+                if (typeof Image === 'undefined') {
+                    return Promise.reject(getError('resource as string is not supported in this environment'));
+                }
                 var img = new Image();
-                img.crossOrigin = (_a = options === null || options === void 0 ? void 0 : options.crossOrigin) !== null && _a !== void 0 ? _a : '';
+                img.crossOrigin = options && options.crossOrigin || '';
                 img.src = resource;
                 return this.bindImageEvents(img, options);
             }
@@ -371,13 +384,13 @@
             options = options || {};
             var defaultColor = getDefaultColor(options);
             if (!resource) {
-                outputError('call .getColor(null) without resource.', options.silent);
+                outputError('call .getColor(null) without resource', options.silent);
                 return this.prepareResult(defaultColor);
             }
             var originalSize = getOriginalSize(resource);
             var size = prepareSizeAndPosition(originalSize, options);
             if (!size.srcWidth || !size.srcHeight || !size.destWidth || !size.destHeight) {
-                outputError("incorrect sizes for resource \"".concat(getSrc(resource), "\"."), options.silent);
+                outputError("incorrect sizes for resource \"".concat(getSrc(resource), "\""), options.silent);
                 return this.prepareResult(defaultColor);
             }
             if (!this.canvas) {
@@ -386,7 +399,7 @@
             if (!this.ctx) {
                 this.ctx = this.canvas.getContext && this.canvas.getContext('2d');
                 if (!this.ctx) {
-                    outputError('Canvas Context 2D is not supported in this browser.', options.silent);
+                    outputError('Canvas Context 2D is not supported in this browser', options.silent);
                     return this.prepareResult(defaultColor);
                 }
             }
@@ -429,7 +442,7 @@
                     algorithm = dominantAlgorithm;
                     break;
                 default:
-                    throw getError("".concat(options.algorithm, " is unknown algorithm."));
+                    throw getError("".concat(options.algorithm, " is unknown algorithm"));
             }
             return algorithm(arr, len, {
                 defaultColor: defaultColor,
@@ -480,7 +493,7 @@
                 };
                 var onabort = function () {
                     unbindEvents();
-                    reject(getError("Image \"".concat(resource.src, "\" loading aborted.")));
+                    reject(getError("Image \"".concat(resource.src, "\" loading aborted")));
                 };
                 var unbindEvents = function () {
                     resource.removeEventListener('load', onload);

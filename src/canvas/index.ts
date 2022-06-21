@@ -1,4 +1,4 @@
-import FastAverageColor from 'fast-average-color';
+import { FastAverageColor } from 'fast-average-color';
 import { rnd, rndFloor } from './helpers';
 
 import '../common';
