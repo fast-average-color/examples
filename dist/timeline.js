@@ -278,7 +278,7 @@
         return filename.search(/\.svg(\?|$)/i) !== -1;
     }
     function getOriginalSize(resource) {
-        if (resource instanceof HTMLImageElement) {
+        if (isInstanceOfHTMLImageElement(resource)) {
             var width = resource.naturalWidth;
             var height = resource.naturalHeight;
             // For SVG images with only viewBox attribute
@@ -290,7 +290,7 @@
                 height: height,
             };
         }
-        if (resource instanceof HTMLVideoElement) {
+        if (isInstanceOfHTMLVideoElement(resource)) {
             return {
                 width: resource.videoWidth,
                 height: resource.videoHeight
@@ -302,16 +302,31 @@
         };
     }
     function getSrc(resource) {
-        if (resource instanceof HTMLCanvasElement) {
+        if (isInstanceOfHTMLCanvasElement(resource)) {
             return 'canvas';
         }
-        if (resource instanceof OffscreenCanvas) {
+        if (isInstanceOfOffscreenCanvas(resource)) {
             return 'offscreencanvas';
         }
-        if (resource instanceof ImageBitmap) {
+        if (isInstanceOfImageBitmap(resource)) {
             return 'imagebitmap';
         }
         return resource.src;
+    }
+    function isInstanceOfHTMLImageElement(resource) {
+        return typeof HTMLImageElement !== 'undefined' && resource instanceof HTMLImageElement;
+    }
+    function isInstanceOfOffscreenCanvas(resource) {
+        return typeof OffscreenCanvas !== 'undefined' && resource instanceof OffscreenCanvas;
+    }
+    function isInstanceOfHTMLVideoElement(resource) {
+        return typeof HTMLVideoElement !== 'undefined' && resource instanceof HTMLVideoElement;
+    }
+    function isInstanceOfHTMLCanvasElement(resource) {
+        return typeof HTMLCanvasElement !== 'undefined' && resource instanceof HTMLCanvasElement;
+    }
+    function isInstanceOfImageBitmap(resource) {
+        return typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap;
     }
     function prepareSizeAndPosition(originalSize, options) {
         var srcLeft = getOption(options, 'left', 0);
@@ -397,7 +412,7 @@
                 img.src = resource;
                 return this.bindImageEvents(img, options);
             }
-            else if (resource instanceof Image && !resource.complete) {
+            else if (isInstanceOfHTMLImageElement(resource) && !resource.complete) {
                 return this.bindImageEvents(resource, options);
             }
             else {
@@ -499,7 +514,11 @@
          * Destroy the instance.
          */
         FastAverageColor.prototype.destroy = function () {
-            this.canvas = null;
+            if (this.canvas) {
+                this.canvas.width = 1;
+                this.canvas.height = 1;
+                this.canvas = null;
+            }
             this.ctx = null;
         };
         FastAverageColor.prototype.bindImageEvents = function (resource, options) {
