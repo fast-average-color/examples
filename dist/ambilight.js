@@ -478,8 +478,9 @@
     function isInstanceOfHTMLImageElement(resource) {
         return typeof HTMLImageElement !== 'undefined' && resource instanceof HTMLImageElement;
     }
+    var hasOffscreenCanvas = typeof OffscreenCanvas !== 'undefined';
     function isInstanceOfOffscreenCanvas(resource) {
-        return typeof OffscreenCanvas !== 'undefined' && resource instanceof OffscreenCanvas;
+        return hasOffscreenCanvas && resource instanceof OffscreenCanvas;
     }
     function isInstanceOfHTMLVideoElement(resource) {
         return typeof HTMLVideoElement !== 'undefined' && resource instanceof HTMLVideoElement;
@@ -534,22 +535,20 @@
     }
     var isWebWorkers = typeof window === 'undefined';
     function makeCanvas() {
-        return isWebWorkers ?
-            new OffscreenCanvas(1, 1) :
-            document.createElement('canvas');
+        if (isWebWorkers) {
+            return hasOffscreenCanvas ? new OffscreenCanvas(1, 1) : null;
+        }
+        return document.createElement('canvas');
     }
 
     var ERROR_PREFIX = 'FastAverageColor: ';
-    function outputError(message, silent, error) {
-        if (!silent) {
-            console.error(ERROR_PREFIX + message);
-            if (error) {
-                console.error(error);
-            }
-        }
+    function getError(message) {
+        return Error(ERROR_PREFIX + message);
     }
-    function getError(text) {
-        return Error(ERROR_PREFIX + text);
+    function outputError(error, silent) {
+        if (!silent) {
+            console.error(error);
+        }
     }
 
     var FastAverageColor = /** @class */ (function () {
@@ -589,38 +588,48 @@
             options = options || {};
             var defaultColor = getDefaultColor(options);
             if (!resource) {
-                outputError('call .getColor(null) without resource', options.silent);
-                return this.prepareResult(defaultColor);
+                var error = getError('call .getColor(null) without resource');
+                outputError(error, options.silent);
+                return this.prepareResult(defaultColor, error);
             }
             var originalSize = getOriginalSize(resource);
             var size = prepareSizeAndPosition(originalSize, options);
             if (!size.srcWidth || !size.srcHeight || !size.destWidth || !size.destHeight) {
-                outputError("incorrect sizes for resource \"".concat(getSrc(resource), "\""), options.silent);
-                return this.prepareResult(defaultColor);
+                var error = getError("incorrect sizes for resource \"".concat(getSrc(resource), "\""));
+                outputError(error, options.silent);
+                return this.prepareResult(defaultColor, error);
             }
             if (!this.canvas) {
                 this.canvas = makeCanvas();
+                if (!this.canvas) {
+                    var error = getError('OffscreenCanvas is not supported in this browser');
+                    outputError(error, options.silent);
+                    return this.prepareResult(defaultColor, error);
+                }
             }
             if (!this.ctx) {
-                this.ctx = this.canvas.getContext && this.canvas.getContext('2d');
+                this.ctx = this.canvas.getContext('2d', { willReadFrequently: true });
                 if (!this.ctx) {
-                    outputError('Canvas Context 2D is not supported in this browser', options.silent);
+                    var error = getError('Canvas Context 2D is not supported in this browser');
+                    outputError(error, options.silent);
                     return this.prepareResult(defaultColor);
                 }
+                this.ctx.imageSmoothingEnabled = false;
             }
             this.canvas.width = size.destWidth;
             this.canvas.height = size.destHeight;
-            var value = defaultColor;
             try {
                 this.ctx.clearRect(0, 0, size.destWidth, size.destHeight);
                 this.ctx.drawImage(resource, size.srcLeft, size.srcTop, size.srcWidth, size.srcHeight, 0, 0, size.destWidth, size.destHeight);
                 var bitmapData = this.ctx.getImageData(0, 0, size.destWidth, size.destHeight).data;
-                value = this.getColorFromArray4(bitmapData, options);
+                return this.prepareResult(this.getColorFromArray4(bitmapData, options));
             }
-            catch (e) {
-                outputError("security error (CORS) for resource ".concat(getSrc(resource), ".\nDetails: https://developer.mozilla.org/en/docs/Web/HTML/CORS_enabled_image"), options.silent, e);
+            catch (originalError) {
+                var error = getError("security error (CORS) for resource ".concat(getSrc(resource), ".\nDetails: https://developer.mozilla.org/en/docs/Web/HTML/CORS_enabled_image"));
+                outputError(error, options.silent);
+                !options.silent && console.error(originalError);
+                return this.prepareResult(defaultColor, error);
             }
-            return this.prepareResult(value);
         };
         /**
          * Get the average color from a array when 1 pixel is 4 bytes.
@@ -658,7 +667,7 @@
         /**
          * Get color data from value ([r, g, b, a]).
          */
-        FastAverageColor.prototype.prepareResult = function (value) {
+        FastAverageColor.prototype.prepareResult = function (value, error) {
             var rgb = value.slice(0, 3);
             var rgba = [value[0], value[1], value[2], value[3] / 255];
             var isDarkColor = isDark(value);
@@ -669,7 +678,8 @@
                 hex: arrayToHex(rgb),
                 hexa: arrayToHex(value),
                 isDark: isDarkColor,
-                isLight: !isDarkColor
+                isLight: !isDarkColor,
+                error: error,
             };
         };
         /**
