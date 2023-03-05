@@ -13,3 +13,4 @@
 - [Ambilight](https://fast-average-color.github.io/examples/ambilight.html)
 - [Algorithms](https://fast-average-color.github.io/examples/algorithms.html)
 - [Define the average color for your images](https://fast-average-color.github.io/examples/define.html)
+- [Timeline](https://fast-average-color.github.io/examples/timeline.html)
