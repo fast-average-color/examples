@@ -165,6 +165,8 @@ class ColorsOfMovies {
 
         this.title.style.background = 'linear-gradient(90deg,' + data.dominantColors.join(',') + ')';
         this.title.style.backgroundClip = 'text';
+        // Fix for Chrome
+        this.title.style.webkitBackgroundClip = 'text';
         this.progress.innerHTML = '';
         document.title = this.originalDocumentTitle;
 
