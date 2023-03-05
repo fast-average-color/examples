@@ -79,6 +79,7 @@ body {
     line-height: 30px;
     background: linear-gradient(90deg, #555, #fff);
     background-clip: text;
+    -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     white-space: nowrap;
 }
