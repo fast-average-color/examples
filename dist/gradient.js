@@ -703,6 +703,7 @@
             'gradient_stripes',
             'border',
             'gallery',
+            'gallery_vertical',
             'box-shadow',
             'box-shadow-4-sides',
             'ambilight',
