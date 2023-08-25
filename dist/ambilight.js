@@ -985,6 +985,7 @@
     window.addEventListener('load', function () {
         var video = document.querySelector('video');
         video.muted = false;
+        video.play();
         var container = document.querySelector('.video-container');
         var ambi = new Ambilight(video, container, {
             onPlay: function () {
@@ -992,6 +993,8 @@
                 hint.style.display = 'none';
             },
         });
+        video.muted = false;
+        video.play();
         var inputs = document.querySelectorAll('input[type="radio"]');
         inputs[location.hash === '#4Sides' ? 1 : 0].checked = true;
         inputs[0].onchange = inputs[1].onchange = function (event) {
