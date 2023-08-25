@@ -4,6 +4,7 @@ import './index.css';
 
 window.addEventListener('load', function() {
     const video = document.querySelector('video') as HTMLVideoElement;
+    video.muted = false;
     const container = document.querySelector('.video-container') as HTMLElement;
     const ambi = new Ambilight(video, container, {
         onPlay() {

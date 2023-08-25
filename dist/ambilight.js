@@ -984,6 +984,7 @@
 
     window.addEventListener('load', function () {
         var video = document.querySelector('video');
+        video.muted = false;
         var container = document.querySelector('.video-container');
         var ambi = new Ambilight(video, container, {
             onPlay: function () {
