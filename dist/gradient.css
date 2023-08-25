@@ -54,6 +54,7 @@ body
 {
     opacity: .5;
 }
+
 .item
 {
     position: relative;
@@ -103,3 +104,4 @@ img
 {
     padding: 20px;
 }
+

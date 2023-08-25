@@ -54,6 +54,7 @@ body
 {
     opacity: .5;
 }
+
 .select-file-container
 {
     margin-top: 50px;
@@ -119,3 +120,4 @@ body
     background: url('../images/transparent.png') 0 0 repeat;
     border-radius: 5px;
 }
+

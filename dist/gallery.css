@@ -54,6 +54,7 @@ body
 {
     opacity: .5;
 }
+
 .big-image {
     position: fixed;
 
@@ -149,3 +150,4 @@ body
 .slider__item_active:hover {
     opacity: 1;
 }
+

@@ -54,6 +54,7 @@ body
 {
     opacity: .5;
 }
+
 .rows {
   margin: 50px 0 0 20px;
   color: #fff;
@@ -76,3 +77,4 @@ body
   max-width: 300px;
   width: 25%;
 }
+

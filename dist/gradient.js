@@ -17,6 +17,8 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
+    /* global Reflect, Promise, SuppressedError, Symbol */
+
 
     function __spreadArray(to, from, pack) {
         if (pack || arguments.length === 2) for (var i = 0, l = from.length, ar; i < l; i++) {
@@ -28,7 +30,12 @@
         return to.concat(ar || Array.prototype.slice.call(from));
     }
 
-    /*! Fast Average Color | © 2022 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
+    typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
+        var e = new Error(message);
+        return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
+    };
+
+    /*! Fast Average Color | © 2023 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
     function toHex(num) {
         var str = num.toString(16);
         return str.length === 1 ? '0' + str : str;
@@ -131,9 +138,10 @@
         return false;
     }
 
+    var DEFAULT_DOMINANT_DIVIDER = 24;
     function dominantAlgorithm(arr, len, options) {
         var colorHash = {};
-        var divider = 24;
+        var divider = options.dominantDivider || DEFAULT_DOMINANT_DIVIDER;
         var ignoredColor = options.ignoredColor;
         var step = options.step;
         var max = [0, 0, 0, 0, 0];
@@ -366,12 +374,9 @@
             this.canvas = null;
             this.ctx = null;
         }
-        /**
-         * Get asynchronously the average color from not loaded image.
-         */
         FastAverageColor.prototype.getColorAsync = function (resource, options) {
             if (!resource) {
-                return Promise.reject(getError('call .getColorAsync() without resource.'));
+                return Promise.reject(getError('call .getColorAsync() without resource'));
             }
             if (typeof resource === 'string') {
                 // Web workers
@@ -398,7 +403,7 @@
             options = options || {};
             var defaultColor = getDefaultColor(options);
             if (!resource) {
-                var error = getError('call .getColor(null) without resource');
+                var error = getError('call .getColor() without resource');
                 outputError(error, options.silent);
                 return this.prepareResult(defaultColor, error);
             }
@@ -471,7 +476,8 @@
             return algorithm(arr, len, {
                 defaultColor: defaultColor,
                 ignoredColor: prepareIgnoredColor(options.ignoredColor),
-                step: step
+                step: step,
+                dominantDivider: options.dominantDivider,
             });
         };
         /**
@@ -518,7 +524,7 @@
                 };
                 var onerror = function () {
                     unbindEvents();
-                    reject(getError("Error loading image \"".concat(resource.src, "\".")));
+                    reject(getError("Error loading image \"".concat(resource.src, "\"")));
                 };
                 var onabort = function () {
                     unbindEvents();
