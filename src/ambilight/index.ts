@@ -4,8 +4,6 @@ import './index.css';
 
 window.addEventListener('load', function() {
     const video = document.querySelector('video') as HTMLVideoElement;
-    video.muted = false;
-    video.play();
     const container = document.querySelector('.video-container') as HTMLElement;
     const ambi = new Ambilight(video, container, {
         onPlay() {
@@ -14,7 +12,7 @@ window.addEventListener('load', function() {
         },
     });
 
-    video.muted = false;
+    video.muted = true;
     video.play();
 
     const inputs = document.querySelectorAll<HTMLInputElement>('input[type="radio"]');
