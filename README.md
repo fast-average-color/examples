@@ -6,6 +6,7 @@
 - [Box shadow, 4 sides](https://fast-average-color.github.io/examples/box-shadow-4-sides.html)
 - [Border](https://fast-average-color.github.io/examples/border.html)
 - [Gallery](https://fast-average-color.github.io/examples/gallery.html)
+- [Vertical and horizontal](https://fast-average-color.github.io/examples/gallery_vertical.html)
 - [Gradient](https://fast-average-color.github.io/examples/gradient.html)
 - [Gradient as stripes](https://fast-average-color.github.io/examples/gradient_stripes.html)
 - [Canvas](https://fast-average-color.github.io/examples/canvas.html)

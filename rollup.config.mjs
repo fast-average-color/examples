@@ -32,6 +32,7 @@ const configs = [
     'gradient',
     'gradient_stripes',
     'gallery',
+    'gallery_vertical',
     'define',
     'timeline',
 ].map(name => createConfig(name));
