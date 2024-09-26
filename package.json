@@ -27,7 +27,7 @@
     "@rollup/plugin-typescript": "^11.1.2",
     "fast-average-color": "^9.4.0",
     "lyam": "^3.0.1",
-    "rollup": "^3.28.1",
+    "rollup": "^3.29.5",
     "rollup-plugin-css-only": "^4.3.0",
     "tslib": "^2.6.2",
     "typescript": "^5.2.2"
