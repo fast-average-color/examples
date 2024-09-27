@@ -31,6 +31,12 @@
             screen.colorDepth
         ].join('x') : '';
     }
+    var DEFAULT_DEVICE_PIXEL_RATIO = 1;
+    function getDevicePixelRatio() {
+        return hasWindow ?
+            (window.devicePixelRatio || DEFAULT_DEVICE_PIXEL_RATIO) :
+            DEFAULT_DEVICE_PIXEL_RATIO;
+    }
     function getClientSize() {
         return hasWindow ? [
             window.innerWidth,
@@ -64,6 +70,7 @@
         addParam(result, 'rn', getRandom());
         addParam(result, 'c', cookieEnabled());
         addParam(result, 's', getScreenSize());
+        addParam(result, 'sk', getDevicePixelRatio());
         addParam(result, 'w', getClientSize());
         addParam(result, 'en', getCharset());
         var time = getSeconds();
@@ -98,7 +105,7 @@
     }
 
     function hitExt(hitExtParams) {
-        var browserInfo = hitExtParams.browserInfo, counterId = hitExtParams.counterId, pageParams = hitExtParams.pageParams, params = hitExtParams.params;
+        var browserInfo = hitExtParams.browserInfo, counterId = hitExtParams.counterId, pageParams = hitExtParams.pageParams;
         var data = {
             'browser-info': getBrowserInfo(browserInfo, pageParams.title),
             rn: getRandom(),
@@ -109,9 +116,6 @@
         }
         if (pageParams.referrer) {
             data['page-ref'] = prepareUrl(pageParams.referrer);
-        }
-        if (params) {
-            data['site-info'] = JSON.stringify(params);
         }
         sendData(counterId, data);
     }
@@ -134,15 +138,9 @@
      * });
      */
     function hit(counterId, hitParams, params) {
-        var referrer = hitParams && hitParams.referrer !== undefined ?
-            hitParams.referrer :
-            getReferrer();
-        var title = hitParams && hitParams.title !== undefined ?
-            hitParams.title :
-            getTitle();
-        var url = hitParams && hitParams.url !== undefined ?
-            hitParams.url :
-            getPageUrl();
+        var referrer = getReferrer();
+        var title = getTitle();
+        var url = getPageUrl();
         hitExt({
             browserInfo: { pv: true, ar: true },
             counterId: counterId,
@@ -202,7 +200,7 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise, SuppressedError, Symbol */
+    /* global Reflect, Promise, SuppressedError, Symbol, Iterator */
 
     var extendStatics = function(d, b) {
         extendStatics = Object.setPrototypeOf ||

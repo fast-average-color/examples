@@ -17,7 +17,7 @@
     OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
     PERFORMANCE OF THIS SOFTWARE.
     ***************************************************************************** */
-    /* global Reflect, Promise, SuppressedError, Symbol */
+    /* global Reflect, Promise, SuppressedError, Symbol, Iterator */
 
 
     function __awaiter(thisArg, _arguments, P, generator) {
@@ -31,8 +31,8 @@
     }
 
     function __generator(thisArg, body) {
-        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-        return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+        var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g = Object.create((typeof Iterator === "function" ? Iterator : Object).prototype);
+        return g.next = verb(0), g["throw"] = verb(1), g["return"] = verb(2), typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
         function verb(n) { return function (v) { return step([n, v]); }; }
         function step(op) {
             if (f) throw new TypeError("Generator is already executing.");
@@ -609,6 +609,12 @@
             screen.colorDepth
         ].join('x') : '';
     }
+    var DEFAULT_DEVICE_PIXEL_RATIO = 1;
+    function getDevicePixelRatio() {
+        return hasWindow ?
+            (window.devicePixelRatio || DEFAULT_DEVICE_PIXEL_RATIO) :
+            DEFAULT_DEVICE_PIXEL_RATIO;
+    }
     function getClientSize() {
         return hasWindow ? [
             window.innerWidth,
@@ -642,6 +648,7 @@
         addParam(result, 'rn', getRandom());
         addParam(result, 'c', cookieEnabled());
         addParam(result, 's', getScreenSize());
+        addParam(result, 'sk', getDevicePixelRatio());
         addParam(result, 'w', getClientSize());
         addParam(result, 'en', getCharset());
         var time = getSeconds();
@@ -676,7 +683,7 @@
     }
 
     function hitExt(hitExtParams) {
-        var browserInfo = hitExtParams.browserInfo, counterId = hitExtParams.counterId, pageParams = hitExtParams.pageParams, params = hitExtParams.params;
+        var browserInfo = hitExtParams.browserInfo, counterId = hitExtParams.counterId, pageParams = hitExtParams.pageParams;
         var data = {
             'browser-info': getBrowserInfo(browserInfo, pageParams.title),
             rn: getRandom(),
@@ -687,9 +694,6 @@
         }
         if (pageParams.referrer) {
             data['page-ref'] = prepareUrl(pageParams.referrer);
-        }
-        if (params) {
-            data['site-info'] = JSON.stringify(params);
         }
         sendData(counterId, data);
     }
@@ -712,15 +716,9 @@
      * });
      */
     function hit(counterId, hitParams, params) {
-        var referrer = hitParams && hitParams.referrer !== undefined ?
-            hitParams.referrer :
-            getReferrer();
-        var title = hitParams && hitParams.title !== undefined ?
-            hitParams.title :
-            getTitle();
-        var url = hitParams && hitParams.url !== undefined ?
-            hitParams.url :
-            getPageUrl();
+        var referrer = getReferrer();
+        var title = getTitle();
+        var url = getPageUrl();
         hitExt({
             browserInfo: { pv: true, ar: true },
             counterId: counterId,
