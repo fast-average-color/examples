@@ -24,12 +24,12 @@
   "private": true,
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^15.3.0",
-    "@rollup/plugin-typescript": "^12.1.0",
+    "@rollup/plugin-typescript": "^12.1.1",
     "fast-average-color": "^9.4.0",
     "lyam": "^3.1.0",
-    "rollup": "^4.22.4",
+    "rollup": "^4.24.0",
     "rollup-plugin-css-only": "^4.5.2",
-    "tslib": "^2.7.0",
-    "typescript": "^5.6.2"
+    "tslib": "^2.8.0",
+    "typescript": "^5.6.3"
   }
 }

@@ -24,6 +24,7 @@ const configs = [
     'ambilight',
     'background',
     'background_async',
+    'background_async_dominant',
     'box-shadow',
     'box-shadow-4-sides',
     'canvas',
