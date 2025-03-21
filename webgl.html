@@ -23,7 +23,7 @@ const canvas = document.getElementById('glCanvas');
 const gl = canvas.getContext('webgl2');
 
 if (!gl) {
-    alert('WebGL не поддерживается!');
+    alert('WebGL is not supported!');
     throw new Error('WebGL unavailable');
 }
 
@@ -182,7 +182,6 @@ const indexBuffer = gl.createBuffer();
 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
 
-// Настройка атрибутов
 const aPosition = gl.getAttribLocation(program, 'aPosition');
 gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
 gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
