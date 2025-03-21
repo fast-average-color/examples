@@ -20,7 +20,7 @@
 
 const fac = new FastAverageColor();
 const canvas = document.getElementById('glCanvas');
-const gl = canvas.getContext('webgl');
+const gl = canvas.getContext('webgl2');
 
 if (!gl) {
     alert('WebGL не поддерживается!');
