@@ -63,7 +63,7 @@
         return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
     };
 
-    /*! Fast Average Color | © 2023 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
+    /*! Fast Average Color | © 2025 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
     function toHex(num) {
         var str = num.toString(16);
         return str.length === 1 ? '0' + str : str;
@@ -304,6 +304,12 @@
                 height: resource.videoHeight
             };
         }
+        if (isInstanceOfVideoFrame(resource)) {
+            return {
+                width: resource.codedWidth,
+                height: resource.codedHeight,
+            };
+        }
         return {
             width: resource.width,
             height: resource.height
@@ -315,6 +321,9 @@
         }
         if (isInstanceOfOffscreenCanvas(resource)) {
             return 'offscreencanvas';
+        }
+        if (isInstanceOfVideoFrame(resource)) {
+            return 'videoframe';
         }
         if (isInstanceOfImageBitmap(resource)) {
             return 'imagebitmap';
@@ -330,6 +339,9 @@
     }
     function isInstanceOfHTMLVideoElement(resource) {
         return typeof HTMLVideoElement !== 'undefined' && resource instanceof HTMLVideoElement;
+    }
+    function isInstanceOfVideoFrame(resource) {
+        return typeof VideoFrame !== 'undefined' && resource instanceof VideoFrame;
     }
     function isInstanceOfHTMLCanvasElement(resource) {
         return typeof HTMLCanvasElement !== 'undefined' && resource instanceof HTMLCanvasElement;
@@ -470,7 +482,9 @@
             catch (originalError) {
                 var error = getError("security error (CORS) for resource ".concat(getSrc(resource), ".\nDetails: https://developer.mozilla.org/en/docs/Web/HTML/CORS_enabled_image"));
                 outputError(error, options.silent);
-                !options.silent && console.error(originalError);
+                if (!options.silent) {
+                    console.error(originalError);
+                }
                 return this.prepareResult(defaultColor, error);
             }
         };
@@ -669,8 +683,9 @@
         return truncate(url, MAX_URL_LEN);
     }
 
+    var metrikaOrigin = 'https://mc.yandex.ru';
     function sendData(counterId, queryParams) {
-        var url = 'https://mc.yandex.ru/watch/' + counterId + '?' + queryStringify(queryParams);
+        var url = metrikaOrigin + '/watch/' + counterId + '?' + queryStringify(queryParams);
         var hasBeacon = typeof navigator !== 'undefined' && navigator.sendBeacon;
         if (!hasBeacon || !navigator.sendBeacon(url, ' ')) {
             if (typeof fetch !== 'undefined') {
@@ -726,9 +741,7 @@
                 referrer: referrer,
                 title: title,
                 url: url
-            },
-            params: params
-        });
+            }});
     }
 
     window.addEventListener('load', function () {
