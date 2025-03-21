@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebGL Cube with Fast Average Color</title>
+    <style>
+        canvas {
+            border: 0;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+    <script src="https://unpkg.com/fast-average-color/dist/index.browser.min.js"></script>
+</head>
+<body>
+    <canvas id="glCanvas" width="600" height="600"></canvas>
+
+<script>
+
+const fac = new FastAverageColor();
+const canvas = document.getElementById('glCanvas');
+const gl = canvas.getContext('webgl');
+
+if (!gl) {
+    alert('WebGL не поддерживается!');
+    throw new Error('WebGL unavailable');
+}
+
+const vertexShaderSource = `
+    attribute vec3 aPosition;
+    attribute vec3 aColor;
+    uniform mat4 uModelViewProjection;
+    varying vec3 vColor;
+    
+    void main() {
+        gl_Position = uModelViewProjection * vec4(aPosition, 1.0);
+        vColor = aColor;
+    }
+`;
+
+const fragmentShaderSource = `
+    precision mediump float;
+    varying vec3 vColor;
+    
+    void main() {
+        gl_FragColor = vec4(vColor, 1.0);
+    }
+`;
+
+function createIdentityMatrix() {
+    return new Float32Array([
+        1, 0, 0, 0,
+        0, 1, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ]);
+}
+
+function multiplyMatrices(a, b) {
+    const result = new Float32Array(16);
+    for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+            result[j*4+i] = 0;
+            for (let k = 0; k < 4; k++) {
+                result[j*4+i] += a[k*4+i] * b[j*4+k];
+            }
+        }
+    }
+    return result;
+}
+
+function createProjectionMatrix(fov, aspect, near, far) {
+    const f = 1.0 / Math.tan(fov * Math.PI / 360);
+    const range = near - far;
+    
+    return new Float32Array([
+        f/aspect, 0, 0, 0,
+        0, f, 0, 0,
+        0, 0, (far + near)/range, -1,
+        0, 0, (2*far*near)/range, 0
+    ]);
+}
+
+function createRotationXMatrix(angle) {
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    
+    return new Float32Array([
+        1, 0, 0, 0,
+        0, c, -s, 0,
+        0, s, c, 0,
+        0, 0, 0, 1
+    ]);
+}
+
+function createRotationYMatrix(angle) {
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    
+    return new Float32Array([
+        c, 0, s, 0,
+        0, 1, 0, 0,
+        -s, 0, c, 0,
+        0, 0, 0, 1
+    ]);
+}
+
+function createRotationZMatrix(angle) {
+    const c = Math.cos(angle);
+    const s = Math.sin(angle);
+    
+    return new Float32Array([
+        c, -s, 0, 0,
+        s, c, 0, 0,
+        0, 0, 1, 0,
+        0, 0, 0, 1
+    ]);
+}
+
+function createShader(gl, type, source) {
+    const shader = gl.createShader(type);
+    gl.shaderSource(shader, source);
+    gl.compileShader(shader);
+    
+    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+        console.error(gl.getShaderInfoLog(shader));
+        gl.deleteShader(shader);
+        return null;
+    }
+    return shader;
+}
+
+const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
+
+const program = gl.createProgram();
+gl.attachShader(program, vertexShader);
+gl.attachShader(program, fragmentShader);
+gl.linkProgram(program);
+
+if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    console.error(gl.getProgramInfoLog(program));
+    gl.deleteProgram(program);
+}
+
+gl.useProgram(program);
+
+const vertices = new Float32Array([
+    -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+    -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, -0.5,
+    -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5,
+    -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5,
+    -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5,
+    0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5
+]);
+
+const colors = new Float32Array([
+    1,0,0,1,0,0,1,0,0,1,0,0,
+    0,1,0,0,1,0,0,1,0,0,1,0,
+    0,0,1,0,0,1,0,0,1,0,0,1,
+    1,1,0,1,1,0,1,1,0,1,1,0,
+    1,0,1,1,0,1,1,0,1,1,0,1,
+    0,1,1,0,1,1,0,1,1,0,1,1
+]);
+
+const indices = new Uint16Array([
+    0,1,2,0,2,3, 4,5,6,4,6,7,
+    8,9,10,8,10,11, 12,13,14,12,14,15,
+    16,17,18,16,18,19, 20,21,22,20,22,23
+]);
+
+const vertexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+
+const colorBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
+
+const indexBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indexBuffer);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indices, gl.STATIC_DRAW);
+
+// Настройка атрибутов
+const aPosition = gl.getAttribLocation(program, 'aPosition');
+gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+gl.vertexAttribPointer(aPosition, 3, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(aPosition);
+
+const aColor = gl.getAttribLocation(program, 'aColor');
+gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+gl.vertexAttribPointer(aColor, 3, gl.FLOAT, false, 0, 0);
+gl.enableVertexAttribArray(aColor);
+
+const uModelViewProjection = gl.getUniformLocation(program, 'uModelViewProjection');
+
+gl.enable(gl.DEPTH_TEST);
+gl.clearColor(0, 0, 0, 0);
+
+let angle = 0;
+function animate() {
+    angle += 0.02;
+    
+    const projection = createProjectionMatrix(
+        20,
+        canvas.width/canvas.height,
+        0.1,
+        100.0
+    );
+    
+    const view = createIdentityMatrix();
+    view[14] = -5;
+    
+    const rotateX = createRotationXMatrix(angle);
+    const rotateY = createRotationYMatrix(angle * 0.7);
+    const rotateZ = createRotationZMatrix(angle * 0.3);
+    
+    let modelView = multiplyMatrices(view, rotateX);
+    modelView = multiplyMatrices(modelView, rotateY);
+    modelView = multiplyMatrices(modelView, rotateZ);
+    
+    const mvp = multiplyMatrices(projection, modelView);
+    
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.uniformMatrix4fv(uModelViewProjection, false, mvp);
+    gl.drawElements(gl.TRIANGLES, indices.length, gl.UNSIGNED_SHORT, 0);
+
+    const averageColor = fac.getColor(canvas);
+    canvas.style.boxShadow = '4px 4px 64px 72px ' + averageColor.rgb;
+    
+    requestAnimationFrame(animate);
+}
+
+animate();
+</script>
+</body>
+</html>
