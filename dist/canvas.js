@@ -3,7 +3,7 @@
     factory();
 })((function () { 'use strict';
 
-    /*! Fast Average Color | © 2025 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
+    /*! Fast Average Color | © 2026 Denis Seleznev | MIT License | https://github.com/fast-average-color/fast-average-color */
     function toHex(num) {
         var str = num.toString(16);
         return str.length === 1 ? '0' + str : str;
@@ -246,8 +246,8 @@
         }
         if (isInstanceOfVideoFrame(resource)) {
             return {
-                width: resource.codedWidth,
-                height: resource.codedHeight,
+                width: resource.displayWidth,
+                height: resource.displayHeight,
             };
         }
         return {
@@ -271,20 +271,20 @@
         return resource.src;
     }
     function isInstanceOfHTMLImageElement(resource) {
-        return typeof HTMLImageElement !== 'undefined' && resource instanceof HTMLImageElement;
+        return Object.prototype.toString.call(resource) === '[object HTMLImageElement]';
     }
     var hasOffscreenCanvas = typeof OffscreenCanvas !== 'undefined';
     function isInstanceOfOffscreenCanvas(resource) {
         return hasOffscreenCanvas && resource instanceof OffscreenCanvas;
     }
     function isInstanceOfHTMLVideoElement(resource) {
-        return typeof HTMLVideoElement !== 'undefined' && resource instanceof HTMLVideoElement;
+        return Object.prototype.toString.call(resource) === '[object HTMLVideoElement]';
     }
     function isInstanceOfVideoFrame(resource) {
         return typeof VideoFrame !== 'undefined' && resource instanceof VideoFrame;
     }
     function isInstanceOfHTMLCanvasElement(resource) {
-        return typeof HTMLCanvasElement !== 'undefined' && resource instanceof HTMLCanvasElement;
+        return Object.prototype.toString.call(resource) === '[object HTMLCanvasElement]';
     }
     function isInstanceOfImageBitmap(resource) {
         return typeof ImageBitmap !== 'undefined' && resource instanceof ImageBitmap;
@@ -365,8 +365,9 @@
                 }
                 var img = new Image();
                 img.crossOrigin = options && options.crossOrigin || '';
+                var promise = this.bindImageEvents(img, options);
                 img.src = resource;
-                return this.bindImageEvents(img, options);
+                return promise;
             }
             else if (isInstanceOfHTMLImageElement(resource) && !resource.complete) {
                 return this.bindImageEvents(resource, options);
@@ -407,24 +408,20 @@
                 if (!this.ctx) {
                     var error = getError('Canvas Context 2D is not supported in this browser');
                     outputError(error, options.silent);
-                    return this.prepareResult(defaultColor);
+                    return this.prepareResult(defaultColor, error);
                 }
-                this.ctx.imageSmoothingEnabled = false;
             }
             this.canvas.width = size.destWidth;
             this.canvas.height = size.destHeight;
+            this.ctx.imageSmoothingEnabled = false;
             try {
                 this.ctx.clearRect(0, 0, size.destWidth, size.destHeight);
                 this.ctx.drawImage(resource, size.srcLeft, size.srcTop, size.srcWidth, size.srcHeight, 0, 0, size.destWidth, size.destHeight);
                 var bitmapData = this.ctx.getImageData(0, 0, size.destWidth, size.destHeight).data;
                 return this.prepareResult(this.getColorFromArray4(bitmapData, options));
             }
-            catch (originalError) {
-                var error = getError("security error (CORS) for resource ".concat(getSrc(resource), ".\nDetails: https://developer.mozilla.org/en/docs/Web/HTML/CORS_enabled_image"));
+            catch (error) {
                 outputError(error, options.silent);
-                if (!options.silent) {
-                    console.error(originalError);
-                }
                 return this.prepareResult(defaultColor, error);
             }
         };
@@ -440,7 +437,10 @@
                 return defaultColor;
             }
             var len = arrLength - arrLength % bytesPerPixel;
-            var step = (options.step || 1) * bytesPerPixel;
+            var step = options.step === undefined ? 1 : options.step;
+            if (!Number.isSafeInteger(step) || step <= 0) {
+                throw getError('step must be a positive safe integer');
+            }
             var algorithm;
             switch (options.algorithm || 'sqrt') {
                 case 'simple':
@@ -458,7 +458,7 @@
             return algorithm(arr, len, {
                 defaultColor: defaultColor,
                 ignoredColor: prepareIgnoredColor(options.ignoredColor),
-                step: step,
+                step: step * bytesPerPixel,
                 dominantDivider: options.dominantDivider,
             });
         };
@@ -494,6 +494,11 @@
         FastAverageColor.prototype.bindImageEvents = function (resource, options) {
             var _this = this;
             return new Promise(function (resolve, reject) {
+                var unbindEvents = function () {
+                    resource.removeEventListener('load', onload);
+                    resource.removeEventListener('error', onerror);
+                    resource.removeEventListener('abort', onabort);
+                };
                 var onload = function () {
                     unbindEvents();
                     var result = _this.getColor(resource, options);
@@ -512,14 +517,12 @@
                     unbindEvents();
                     reject(getError("Image \"".concat(resource.src, "\" loading aborted")));
                 };
-                var unbindEvents = function () {
-                    resource.removeEventListener('load', onload);
-                    resource.removeEventListener('error', onerror);
-                    resource.removeEventListener('abort', onabort);
-                };
                 resource.addEventListener('load', onload);
                 resource.addEventListener('error', onerror);
                 resource.addEventListener('abort', onabort);
+                if (resource.src && resource.complete) {
+                    onload();
+                }
             });
         };
         return FastAverageColor;
